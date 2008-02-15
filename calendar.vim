@@ -2,9 +2,10 @@
 " What Is This: Calendar
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: Wed, 25 Jul 2007
-" Version: 1.6
+" Last Change: Fri, 15 Feb 2008
+" Version: 1.7
 " Thanks:
+"     Per Winkvist                  : bug fix
 "     Serge (gentoosiast) Koksharov : bug fix
 "     Vitor Antunes                 : bug fix
 "     Olivier Mengue                : bug fix
@@ -52,11 +53,12 @@
 "     <Leader>ch
 "       show horizontal calendar ...
 " ChangeLog:
+"     1.7  : bug fix, week number was broken on 2008.
 "     1.6  : added calendar_begin action.
 "            added calendar_end action.
 "     1.5  : bug fix, fixed ruler formating with strpart.
 "            bug fix, using winfixheight.
-"     1.4a : bug fix, week numbenr was broken on 2005.
+"     1.4a : bug fix, week number was broken on 2005.
 "            added calendar_today action.
 "            bug fix, about wrapscan.
 "            bug fix, about today mark.
@@ -301,7 +303,7 @@
 "       :echo calendar_version
 " GetLatestVimScripts: 52 1 :AutoInstall: calendar.vim
 
-let g:calendar_version = "1.6"
+let g:calendar_version = "1.7"
 if &compatible
   finish
 endif
@@ -503,7 +505,7 @@ function! Calendar(...)
   "+++ ready for build
   "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   " remember today
-  " divide strftime('%d') by 1 so as to get "1, 2,3 .. 9" instead of "01, 02, 03 .. 09"
+  " divide strftime('%d') by 1 so as to get "1,2,3 .. 9" instead of "01, 02, 03 .. 09"
   let vtoday = strftime('%Y').strftime('%m').strftime('%d')
 
   " get arguments
@@ -556,76 +558,84 @@ function! Calendar(...)
     " set boundary of the month
     if vmnth == 1
       let vmdays = 31
-      let vparam = 0
+      let vparam = 1
       let vsmnth = 'Jan'
     elseif vmnth == 2
       let vmdays = 28
-      let vparam = 31
+      let vparam = 32
       let vsmnth = 'Feb'
     elseif vmnth == 3
       let vmdays = 31
-      let vparam = 59
+      let vparam = 60
       let vsmnth = 'Mar'
     elseif vmnth == 4
       let vmdays = 30
-      let vparam = 90
+      let vparam = 91
       let vsmnth = 'Apr'
     elseif vmnth == 5
       let vmdays = 31
-      let vparam = 120
+      let vparam = 121
       let vsmnth = 'May'
     elseif vmnth == 6
       let vmdays = 30
-      let vparam = 151
+      let vparam = 152
       let vsmnth = 'Jun'
     elseif vmnth == 7
       let vmdays = 31
-      let vparam = 181
+      let vparam = 182
       let vsmnth = 'Jul'
     elseif vmnth == 8
       let vmdays = 31
-      let vparam = 212
+      let vparam = 213
       let vsmnth = 'Aug'
     elseif vmnth == 9
       let vmdays = 30
-      let vparam = 243
+      let vparam = 244
       let vsmnth = 'Sep'
     elseif vmnth == 10
       let vmdays = 31
-      let vparam = 273
+      let vparam = 274
       let vsmnth = 'Oct'
     elseif vmnth == 11
       let vmdays = 30
-      let vparam = 304
+      let vparam = 305
       let vsmnth = 'Nov'
     elseif vmnth == 12
       let vmdays = 31
-      let vparam = 334
+      let vparam = 335
       let vsmnth = 'Dec'
     else
       echo 'Invalid Year or Month'
       return
     endif
+    if vyear % 400 == 0
+      if vmnth == 2
+        let vmdays = 29
+      elseif vmnth >= 3
+        let vparam = vparam + 1
+      endif
+    elseif vyear % 100 == 0
+      if vmnth == 2
+        let vmdays = 28
+      endif
+    elseif vyear % 4 == 0
+      if vmnth == 2
+        let vmdays = 29
+      elseif vmnth >= 3
+        let vparam = vparam + 1
+      endif
+    endif
 
     " calc vnweek of the day
     if vnweek == -1
-      let vnweek = ( vyear * 365 ) + vparam + 1
+      let vnweek = ( vyear * 365 ) + vparam
       let vnweek = vnweek + ( vyear/4 ) - ( vyear/100 ) + ( vyear/400 )
-      if vmnth < 3 && vyear % 4 == 0
+      if vyear % 4 == 0
         if vyear % 100 != 0 || vyear % 400 == 0
           let vnweek = vnweek - 1
         endif
       endif
       let vnweek = vnweek - 1
-    endif
-    if vmnth == 2
-      if vyear % 400 == 0
-        let vmdays = 29
-      elseif vyear % 100 == 0
-        let vmdays = 28
-      elseif vyear % 4 == 0
-        let vmdays = 29
-      endif
     endif
 
     " fix Gregorian
@@ -643,8 +653,8 @@ function! Calendar(...)
       let vnweek = vnweek - 1
     elseif exists('g:calendar_weeknm')
       " if given g:calendar_weeknm, show week number(ref:ISO8601)
-      let viweek = (vparam + 1) / 7
-      let vfweek = (vparam + 1) % 7
+      let viweek = vparam / 7
+      let vfweek = vparam % 7
       if vnweek == 0
         let vfweek = vfweek - 7
         let viweek = viweek + 1
@@ -669,9 +679,6 @@ function! Calendar(...)
         endif
       endif
       let vcolumn = vcolumn + 5
-      if ((vyear % 4 == 0 && vmnth >= 3) || (vyear-1) % 4 == 0)
-        let viweek = viweek + 1
-      endif
     endif
 
     "--------------------------------------------------------------
@@ -1215,6 +1222,8 @@ endfunction
 "*----------------------------------------------------------------
 "*****************************************************************
 function! s:CalendarHelp()
+  echohl None
+  echo 'Calendar version ' . g:calendar_version
   echohl SpecialKey
   echo '<s-left>  : goto prev month'
   echo '<s-right> : goto next month'
