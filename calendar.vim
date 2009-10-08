@@ -2,9 +2,10 @@
 " What Is This: Calendar
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: Fri, 15 Feb 2008
-" Version: 1.7
+" Last Change: Thu, 08 Oct 2009
+" Version: 1.8
 " Thanks:
+"     Yu Pei                        : bug report
 "     Per Winkvist                  : bug fix
 "     Serge (gentoosiast) Koksharov : bug fix
 "     Vitor Antunes                 : bug fix
@@ -53,6 +54,7 @@
 "     <Leader>ch
 "       show horizontal calendar ...
 " ChangeLog:
+"     1.8  : bug fix, E382 when close diary.
 "     1.7  : bug fix, week number was broken on 2008.
 "     1.6  : added calendar_begin action.
 "            added calendar_end action.
@@ -303,7 +305,7 @@
 "       :echo calendar_version
 " GetLatestVimScripts: 52 1 :AutoInstall: calendar.vim
 
-let g:calendar_version = "1.7"
+let g:calendar_version = "1.8"
 if &compatible
   finish
 endif
@@ -1191,7 +1193,7 @@ function! s:CalendarDiary(day, month, year, week, dir)
   let dir = getbufvar(vbufnr, "CalendarDir")
   let vyear = getbufvar(vbufnr, "CalendarYear")
   let vmnth = getbufvar(vbufnr, "CalendarMonth")
-  exe "auto BufLeave ".escape(sfile, ' \\')." w|call Calendar(" . dir . "," . vyear . "," . vmnth . ")"
+  exe "auto BufDelete ".escape(sfile, ' \\')." call Calendar(" . dir . "," . vyear . "," . vmnth . ")"
 endfunc
 
 "*****************************************************************
