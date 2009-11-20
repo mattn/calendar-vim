@@ -3,8 +3,9 @@
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: Thu, 08 Oct 2009
-" Version: 1.8
+" Version: 1.9
 " Thanks:
+"     Thinca                        : bug report
 "     Yu Pei                        : bug report
 "     Per Winkvist                  : bug fix
 "     Serge (gentoosiast) Koksharov : bug fix
@@ -54,6 +55,7 @@
 "     <Leader>ch
 "       show horizontal calendar ...
 " ChangeLog:
+"     1.9  : bug fix, use nnoremap.
 "     1.8  : bug fix, E382 when close diary.
 "     1.7  : bug fix, week number was broken on 2008.
 "     1.6  : added calendar_begin action.
@@ -305,7 +307,7 @@
 "       :echo calendar_version
 " GetLatestVimScripts: 52 1 :AutoInstall: calendar.vim
 
-let g:calendar_version = "1.8"
+let g:calendar_version = "1.9"
 if &compatible
   finish
 endif
@@ -342,8 +344,8 @@ endif
 "*****************************************************************
 "* Calendar commands
 "*****************************************************************
-:command! -nargs=* Calendar  call Calendar(0,<f-args>)
-:command! -nargs=* CalendarH call Calendar(1,<f-args>)
+command! -nargs=* Calendar  call Calendar(0,<f-args>)
+command! -nargs=* CalendarH call Calendar(1,<f-args>)
 
 if !hasmapto("<Plug>CalendarV")
   nmap <unique> <Leader>cal <Plug>CalendarV
@@ -351,8 +353,8 @@ endif
 if !hasmapto("<Plug>CalendarH")
   nmap <unique> <Leader>caL <Plug>CalendarH
 endif
-nmap <silent> <Plug>CalendarV :cal Calendar(0)<CR>
-nmap <silent> <Plug>CalendarH :cal Calendar(1)<CR>
+nnoremap <silent> <Plug>CalendarV :cal Calendar(0)<CR>
+nnoremap <silent> <Plug>CalendarH :cal Calendar(1)<CR>
 
 "*****************************************************************
 "* GetToken : get token from source with count
