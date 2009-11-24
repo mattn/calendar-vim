@@ -256,6 +256,12 @@
 "       let g:calendar_weeknm = 3 " KW01
 "       let g:calendar_weeknm = 4 " KW 1
 "
+"     *if you want to show the current date and time, add below to your .vimrc:
+"
+"       let g:calendar_datetime = 'title'
+"
+"       NOTE:you can set 'title', 'statusline', '' for this option.
+"
 "     *if you want to hook calender when pressing enter,
 "       add this to your .vimrc:
 "
@@ -340,6 +346,12 @@ endif
 if !exists("g:calendar_focus_today")
   let g:calendar_focus_today = 0
 endif
+if !exists("g:calendar_datetime")
+ \|| (g:calendar_datetime != ''
+ \&& g:calendar_datetime != 'title'
+ \&& g:calendar_datetime != 'statusline')
+  let g:calendar_datetime = 'title'
+endif
 
 "*****************************************************************
 "* Calendar commands
@@ -390,19 +402,22 @@ endfunction
 "*----------------------------------------------------------------
 "*****************************************************************
 function! s:CalendarDoAction(...)
-  " if no action defined return
-  if !exists("g:calendar_action")
-    return
-  endif
-
   " for navi
   if exists('g:calendar_navi')
     let navi = (a:0 > 0)? a:1 : expand("<cWORD>")
     let curl = line(".")
     if navi == '<' . s:GetToken(g:calendar_navi_label, ',', 1)
-      exec substitute(maparg('<s-left>', 'n'), '<CR>', '', '')
+      if b:CalendarMonth > 1
+        call Calendar(b:CalendarDir, b:CalendarYear, b:CalendarMonth-1)
+      else
+        call Calendar(b:CalendarDir, b:CalendarYear-1, 12)
+      endif
     elseif navi == s:GetToken(g:calendar_navi_label, ',', 3) . '>'
-      exec substitute(maparg('<s-right>', 'n'), '<CR>', '', '')
+      if b:CalendarMonth < 12
+        call Calendar(b:CalendarDir, b:CalendarYear, b:CalendarMonth+1)
+      else
+        call Calendar(b:CalendarDir, b:CalendarYear+1, 1)
+      endif
     elseif navi == s:GetToken(g:calendar_navi_label, ',', 2)
       call Calendar(b:CalendarDir)
       if exists('g:calendar_today')
@@ -416,16 +431,19 @@ function! s:CalendarDoAction(...)
         silent execute "normal! gg/\*\<cr>"
         return
       else
-        setlocal ws
         if curl < line('$')/2
           silent execute "normal! gg0/".navi."\<cr>"
         else
-          silent execute "normal! G0/".navi."\<cr>"
+          silent execute "normal! G$?".navi."\<cr>"
         endif
-        setlocal nows
         return
       endif
     endif
+  endif
+
+  " if no action defined return
+  if !exists("g:calendar_action") || g:calendar_action == ""
+    return
   endif
 
   if b:CalendarDir
@@ -743,7 +761,7 @@ function! Calendar(...)
       else
          let vtarget = vtarget.vdaycur
       endif
-      if exists("g:calendar_sign")
+      if exists("g:calendar_sign") && g:calendar_sign != ""
         exe "let vsign = " . g:calendar_sign . "(vdaycur, vmnth, vyear)"
         if vsign != ""
           let vsign = vsign[0]
@@ -948,15 +966,15 @@ function! Calendar(...)
   if vwinnum >= 0
     " if already exist
     if vwinnum != bufwinnr('%')
-      exe "normal \<c-w>".vwinnum."w"
+      exe vwinnum . 'wincmd w'
     endif
     setlocal modifiable
     silent %d _
   else
     " make title
-    if (!exists('s:bufautocommandsset'))
-      auto BufEnter *Calendar let b:sav_titlestring = &titlestring | let &titlestring = '%{strftime("%c")}' | let b:sav_wrapscan = &wrapscan
-      auto BufLeave *Calendar let &titlestring = b:sav_titlestring | let &wrapscan = b:sav_wrapscan
+    if g:calendar_datetime == "title" && (!exists('s:bufautocommandsset'))
+      auto BufEnter *Calendar let b:sav_titlestring = &titlestring | let &titlestring = '%{strftime("%c")}'
+      auto BufLeave *Calendar let &titlestring = b:sav_titlestring
       let s:bufautocommandsset=1
     endif
 
@@ -976,17 +994,22 @@ function! Calendar(...)
       execute 'to '.vcolumn.'vsplit __Calendar'
     endif
     setlocal noswapfile
-    setlocal buftype=nowrite
+    setlocal buftype=nofile
     setlocal bufhidden=delete
     setlocal nonumber
-    setlocal nowrap
+    " Without this, the 'sidescrolloff' setting may cause the left side of the
+    " calendar to disappear if the last inserted element is near the right
+    " window border.
+    setlocal wrap
     setlocal norightleft
     setlocal foldcolumn=0
     setlocal modifiable
     setlocal nolist
-    set nowrapscan
     let b:Calendar='Calendar'
     " is this a vertical (0) or a horizontal (1) split?
+  endif
+  if g:calendar_datetime == "statusline"
+    setlocal statusline=%{strftime('%c')}
   endif
   let b:CalendarDir=dir
   let b:CalendarYear = vyear_org
@@ -1009,28 +1032,30 @@ function! Calendar(...)
 
     if g:calendar_navi == 'top'
       execute "normal gg".navcol."i "
-      silent exec "normal! i".navi_label."\<cr>\<cr>"
+      silent exec "normal! a".navi_label."\<cr>\<cr>"
       silent put! =vdisplay1
     endif
     if g:calendar_navi == 'bottom'
       silent put! =vdisplay1
       silent exec "normal! Gi\<cr>"
       execute "normal ".navcol."i "
-      silent exec "normal! i".navi_label
+      silent exec "normal! a".navi_label
     endif
     if g:calendar_navi == 'both'
       execute "normal gg".navcol."i "
-      silent exec "normal! i".navi_label."\<cr>\<cr>"
+      silent exec "normal! a".navi_label."\<cr>\<cr>"
       silent put! =vdisplay1
       silent exec "normal! Gi\<cr>"
       execute "normal ".navcol."i "
-      silent exec "normal! i".navi_label
+      silent exec "normal! a".navi_label
     endif
   else
     silent put! =vdisplay1
   endif
 
   setlocal nomodifiable
+  " In case we've gotten here from insert mode (via <C-O>:Calendar<CR>)...
+  stopinsert
 
   let vyear = vyear_org
   let vmnth = vmnth_org
@@ -1039,21 +1064,7 @@ function! Calendar(...)
   "+++ build keymap
   "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   " make keymap
-  if vmnth > 1
-    execute 'nnoremap <silent> <buffer> <s-left> '
-      \.':call Calendar('.dir.','.vyear.','.(vmnth-1).')<cr>'
-  else
-    execute 'nnoremap <silent> <buffer> <s-left> '
-      \.':call Calendar('.dir.','.(vyear-1).',12)<cr>'
-  endif
-  if vmnth < 12
-    execute 'nnoremap <silent> <buffer> <s-right> '
-      \.':call Calendar('.dir.','.vyear.','.(vmnth+1).')<cr>'
-  else
-    execute 'nnoremap <silent> <buffer> <s-right> '
-      \.':call Calendar('.dir.','.(vyear+1).',1)<cr>'
-  endif
-  execute 'nnoremap <silent> <buffer> q :close<cr>'
+  execute 'nnoremap <silent> <buffer> q :close<bar>wincmd p<cr>'
 
   execute 'nnoremap <silent> <buffer> <cr> :call <SID>CalendarDoAction()<cr>'
   execute 'nnoremap <silent> <buffer> <2-LeftMouse> :call <SID>CalendarDoAction()<cr>'
@@ -1062,10 +1073,10 @@ function! Calendar(...)
   execute 'nnoremap <silent> <buffer> r :call Calendar(' . dir . ',' . vyear . ',' . vmnth . ')<cr>'
   let pnav = s:GetToken(g:calendar_navi_label, ',', 1)
   let nnav = s:GetToken(g:calendar_navi_label, ',', 3)
-  execute 'nnoremap <silent> <buffer> <Up>    :call <SID>CalendarDoAction("<' . pnav . '")<cr>'
   execute 'nnoremap <silent> <buffer> <Left>  :call <SID>CalendarDoAction("<' . pnav . '")<cr>'
-  execute 'nnoremap <silent> <buffer> <Down>  :call <SID>CalendarDoAction("' . nnav . '>")<cr>'
   execute 'nnoremap <silent> <buffer> <Right> :call <SID>CalendarDoAction("' . nnav . '>")<cr>'
+  execute 'nnoremap <silent> <buffer> <Up>    :call Calendar('.dir.','.(vyear-1).','.vmnth.')<cr>'
+  execute 'nnoremap <silent> <buffer> <Down>  :call Calendar('.dir.','.(vyear+1).','.vmnth.')<cr>'
 
   "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   "+++ build highlight
@@ -1137,7 +1148,7 @@ function! Calendar(...)
 
   return ''
 endfunction
- 
+
 "*****************************************************************
 "* CalendarMakeDir : make directory
 "*----------------------------------------------------------------
@@ -1229,8 +1240,10 @@ function! s:CalendarHelp()
   echohl None
   echo 'Calendar version ' . g:calendar_version
   echohl SpecialKey
-  echo '<s-left>  : goto prev month'
-  echo '<s-right> : goto next month'
+  echo '<Left>    : goto prev month'
+  echo '<Right>   : goto next month'
+  echo '<Up>      : goto prev year'
+  echo '<Down>    : goto next year'
   echo 't         : goto today'
   echo 'q         : close window'
   echo 'r         : re-display window'
