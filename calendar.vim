@@ -2,9 +2,10 @@
 " What Is This: Calendar
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: Thu, 08 Oct 2009
-" Version: 1.9
+" Last Change: Tue, 24 Nov 2009
+" Version: 2.0
 " Thanks:
+"     Ingo Karkat                   : bug fix
 "     Thinca                        : bug report
 "     Yu Pei                        : bug report
 "     Per Winkvist                  : bug fix
@@ -55,6 +56,7 @@
 "     <Leader>ch
 "       show horizontal calendar ...
 " ChangeLog:
+"     2.0  : bug fix, many bug fix and enhancements.
 "     1.9  : bug fix, use nnoremap.
 "     1.8  : bug fix, E382 when close diary.
 "     1.7  : bug fix, week number was broken on 2008.
@@ -313,7 +315,7 @@
 "       :echo calendar_version
 " GetLatestVimScripts: 52 1 :AutoInstall: calendar.vim
 
-let g:calendar_version = "1.9"
+let g:calendar_version = "2.0"
 if &compatible
   finish
 endif
