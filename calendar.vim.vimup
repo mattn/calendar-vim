@@ -1,0 +1,77 @@
+script_name: calendar.vim
+script_id: '52'
+script_type: utility
+script_package: calendar.vim
+script_version: '2.1'
+required_vim_version: '6.0'
+summary: Calendar
+
+detailed_description: |
+  This script create calender window. 
+  This don't use the external program(cal).
+
+install_details: |
+  Copy calendar.vim to your plugin directory.
+
+versions:
+- '2.1': |
+   Applied patch from thinca. Thanks.
+- '2.0': |
+   Applied patch from Ingo Karkat. Thanks.
+
+   - ENH: Added a config setting g:calendar_datetime. This allows to remove the
+   display of the current date/time in the title (I don't like it), and offers the
+   window's statusline as an alternative.
+   
+   - BUG: The checks for g:calendar_action and g:calendar_sign should also check
+   for an existing, but empty variable. Otherwise, it is not possible to disable it
+   in a .vimrc, because the sourcing of calendar.vim would initialize the variables.
+   
+   - BUG: In s:CalendarDoAction(), the check for g:calendar_action must come after
+   the "navi" handling; otherwise "navi" breaks if g:calendar_action is disabled
+   (see above).
+   
+   - ENH: The :set wrapscan is ugly, because it is a global setting. The search()
+   commands already pass the 'w' flag, so the only remaining issue were the
+   searches via /. I modified the 'G0/...' search to 'G$?' (i.e. backward from end
+   of buffer), so that 'wrapscan' isn't required any more. (Even better would be to
+   use search() for these jumps, too.) With this, I can also completely get rid of
+   the autocmds in case one does not want the date/time in the title, neither (see
+   above).
+   
+   - Using :setlocal buftype=nofile instead of =nowrite; this is more suitable for
+   this kind of scratch buffer, and avoids that the path may be shown in the title
+   / statusline (depending on the customization).
+   
+   - BUG: Replaced :setlocal nowrap with 'wrap'. Without this, the 'sidescrolloff'
+   setting may cause the left side of the calendar to disappear if the last
+   inserted element is near the right window border. 'wrap' shouldn't matter,
+   anyway, and 'sidescrolloff' is a global setting, unfortunately.
+   Try :set sidescrolloff=3 in combination with :let g:calendar_navi = 'bottom' to
+   reproduce.
+   
+   - BUG: The :normal i... for the navi rendering causes a trailing space after the
+   "Next>" button. This way, I cannot quickly type "G$<CR>" to activate the next
+   button. Now using :normal a... to append. This causes the entire navi to shift
+   one character to the right, but you could fix this by decreasing the column
+   counter.
+   
+   - ENH: Use :stopinsert in case we've gotten here from insert mode (via
+   <C-O>:Calendar<CR>)...
+   
+   - Using :wincmd w instead of :normal <C-w>; it's simpler. (And you should always
+   use :normal! (with a bang) to avoid interference with user remappings!)
+   
+   - ENH: I noticed that <left> and <s-left> do the same thing, but in different
+   ways (one uses the navi and the latter is called by the former). I dropped the
+   unintuitive shift mappings and instead do the jumps consistently in the navi,
+   using the b:Calendar... variables instead of that ugly maparg() stuff.
+
+   - ENH: I noticed that <left> and <up> do the same thing. I changed <up>/<down>
+   to move an entire year, so one can quickly let the years pass...
+
+   - ENH: the 'q' mapping now returns to the previous window, not the first one.
+- '1.9': |
+   This is an upgrade for calendar.vim. use nnoremap.
+- '1.8': |
+   This is an upgrade for calendar.vim. fixed E382 while closing diary.
