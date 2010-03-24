@@ -2,9 +2,10 @@
 " What Is This: Calendar
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: Tue, 24 Nov 2009
-" Version: 2.0
+" Last Change: 25-Mar-2010.
+" Version: 2.1
 " Thanks:
+"     thinca                        : bug fix
 "     Ingo Karkat                   : bug fix
 "     Thinca                        : bug report
 "     Yu Pei                        : bug report
@@ -56,6 +57,7 @@
 "     <Leader>ch
 "       show horizontal calendar ...
 " ChangeLog:
+"     2.1  : bug fix, set filetype 'calendar'.
 "     2.0  : bug fix, many bug fix and enhancements.
 "     1.9  : bug fix, use nnoremap.
 "     1.8  : bug fix, E382 when close diary.
@@ -315,7 +317,7 @@
 "       :echo calendar_version
 " GetLatestVimScripts: 52 1 :AutoInstall: calendar.vim
 
-let g:calendar_version = "2.0"
+let g:calendar_version = "2.1"
 if &compatible
   finish
 endif
@@ -1008,6 +1010,7 @@ function! Calendar(...)
     setlocal modifiable
     setlocal nolist
     let b:Calendar='Calendar'
+    setlocal filetype=calendar
     " is this a vertical (0) or a horizontal (1) split?
   endif
   if g:calendar_datetime == "statusline"
