@@ -56,6 +56,8 @@
 "     <Leader>ch
 "       show horizontal calendar ...
 " ChangeLog:
+"     2.2  : http://gist.github.com/355513#file_customizable_keymap.diff
+"            http://gist.github.com/355513#file_winfixwidth.diff
 "     2.1  : bug fix, set filetype 'calendar'.
 "     2.0  : bug fix, many bug fix and enhancements.
 "     1.9  : bug fix, use nnoremap.
@@ -316,7 +318,7 @@
 "       :echo calendar_version
 " GetLatestVimScripts: 52 1 :AutoInstall: calendar.vim
 
-let g:calendar_version = "2.1"
+let g:calendar_version = "2.2"
 if &compatible
   finish
 endif
