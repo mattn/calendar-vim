@@ -2,7 +2,7 @@
 " What Is This: Calendar
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 05-Apr-2010.
+" Last Change: 06-May-2010.
 " Version: 2.2
 " Thanks:
 "     Ingo Karkat                   : bug fix
@@ -995,6 +995,7 @@ function! Calendar(...)
       setlocal winfixheight
     else
       execute 'to '.vcolumn.'vsplit __Calendar'
+      setlocal winfixwidth
     endif
     call s:CalendarBuildKeymap(dir, vyear, vmnth)
     setlocal noswapfile
