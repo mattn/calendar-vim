@@ -15,7 +15,7 @@ install_details: |
 
 versions:
 - '2.4': |
-   Applied patch from SethMilliken: added g:calendar_foldcolumn_option, g:calendar_relativenumber_option .
+   Applied patch from SethMilliken: added g:calendar_options . default is 'fdc=0 nonu nornu' . you can overwrite default behavior of calendar window.
 - '2.3': |
    Applied patch from bw1: fixed weeknum function.
 - '2.2': |
