@@ -360,14 +360,8 @@ if !exists("g:calendar_datetime")
  \&& g:calendar_datetime != 'statusline')
   let g:calendar_datetime = 'title'
 endif
-if !exists("g:calendar_foldcolumn_option")
-    let g:calendar_foldcolumn_option=0
-endif
-if !exists("g:calendar_number_option")
-    let g:calendar_number_option="nonu"
-endif
-if !exists("g:calendar_relativenumber_option")
-    let g:calendar_relativenumber_option="nornu"
+if !exists("g:calendar_options")
+    let g:calendar_options="fdc=0 nonu nornu"
 endif
 
 "*****************************************************************
@@ -1028,12 +1022,10 @@ function! Calendar(...)
     setlocal noswapfile
     setlocal buftype=nofile
     setlocal bufhidden=delete
-    exe "setlocal " . g:calendar_number_option
-    exe "setlocal foldcolumn=" . g:calendar_foldcolumn_option
-    let nontext_columns = &foldcolumn + (&nu * &numberwidth)
-    if exists('+relativenumber')
-        exe "setlocal " . g:calendar_relativenumber_option
-        let nontext_columns += &rnu * &numberwidth
+    exe "setlocal " . g:calendar_options
+    let nontext_columns = &foldcolumn + &nu * &numberwidth
+    if has("+relativenumber")
+      let nontext_columns += &rnu * &numberwidth
     endif
     " Without this, the 'sidescrolloff' setting may cause the left side of the
     " calendar to disappear if the last inserted element is near the right
