@@ -3,7 +3,7 @@
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 27-Jan-2011.
-" Version: 2.4
+" Version: 2.5
 " Thanks:
 "     SethMilliken                  : gave a hint for 2.4
 "     bw1                           : bug fix
@@ -58,6 +58,8 @@
 "     <Leader>caL
 "       show horizontal calendar ...
 " ChangeLog:
+"     2.5  : bug fix, 7.2 don't have relativenumber.
+"     2.4  : added g:calendar_options.
 "     2.3  : week number like ISO8601 
 "            g:calendar_monday and g:calendar_weeknm work together
 "     2.2  : http://gist.github.com/355513#file_customizable_keymap.diff
@@ -321,7 +323,7 @@
 "       :echo calendar_version
 " GetLatestVimScripts: 52 1 :AutoInstall: calendar.vim
 
-let g:calendar_version = "2.3"
+let g:calendar_version = "2.5"
 if &compatible
   finish
 endif
@@ -361,7 +363,10 @@ if !exists("g:calendar_datetime")
   let g:calendar_datetime = 'title'
 endif
 if !exists("g:calendar_options")
-    let g:calendar_options="fdc=0 nonu nornu"
+  let g:calendar_options="fdc=0 nonu"
+  if has("+relativenumber")
+    let g:calendar_options .= " nornu"
+  endif
 endif
 
 "*****************************************************************
@@ -1022,7 +1027,7 @@ function! Calendar(...)
     setlocal noswapfile
     setlocal buftype=nofile
     setlocal bufhidden=delete
-    exe "setlocal " . g:calendar_options
+    silent! exe "setlocal " . g:calendar_options
     let nontext_columns = &foldcolumn + &nu * &numberwidth
     if has("+relativenumber")
       let nontext_columns += &rnu * &numberwidth
