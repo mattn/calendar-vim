@@ -5,6 +5,7 @@
 " Last Change: 27-Jan-2011.
 " Version: 2.4
 " Thanks:
+"     SethMilliken                  : gave a hint for 2.4
 "     bw1                           : bug fix
 "     Ingo Karkat                   : bug fix
 "     Thinca                        : bug report, bug fix
