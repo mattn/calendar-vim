@@ -2,7 +2,7 @@
 " What Is This: Calendar
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 09-Jan-2011.
+" Last Change: 27-Jan-2011.
 " Version: 2.3
 " Thanks:
 "     bw1                           : bug fix
@@ -1037,7 +1037,7 @@ function! Calendar(...)
     " Without this, the 'sidescrolloff' setting may cause the left side of the
     " calendar to disappear if the last inserted element is near the right
     " window border.
-    setlocal wrap
+    setlocal nowrap
     setlocal norightleft
     setlocal modifiable
     setlocal nolist
