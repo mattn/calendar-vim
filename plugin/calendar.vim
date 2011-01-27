@@ -3,7 +3,7 @@
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 27-Jan-2011.
-" Version: 2.3
+" Version: 2.4
 " Thanks:
 "     bw1                           : bug fix
 "     Ingo Karkat                   : bug fix
