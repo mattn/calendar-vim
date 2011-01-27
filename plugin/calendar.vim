@@ -52,9 +52,9 @@
 "     :CalendarH ...
 "       show horizontal calendar ...
 "
-"     <Leader>ca
+"     <Leader>cal
 "       show calendar in normal mode
-"     <Leader>ch
+"     <Leader>caL
 "       show horizontal calendar ...
 " ChangeLog:
 "     2.3  : week number like ISO8601 
