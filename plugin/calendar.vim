@@ -359,6 +359,15 @@ if !exists("g:calendar_datetime")
  \&& g:calendar_datetime != 'statusline')
   let g:calendar_datetime = 'title'
 endif
+if !exists("g:calendar_foldcolumn_option")
+    let g:calendar_foldcolumn_option=0
+endif
+if !exists("g:calendar_number_option")
+    let g:calendar_number_option="nonu"
+endif
+if !exists("g:calendar_relativenumber_option")
+    let g:calendar_relativenumber_option="nornu"
+endif
 
 "*****************************************************************
 "* Calendar commands
@@ -684,7 +693,7 @@ function! Calendar(...)
 
     if exists('g:calendar_weeknm')
       " if given g:calendar_weeknm, show week number(ref:ISO8601)
-    
+
       "vparam <= 1. day of month
       "vnweek <= 1. weekday of month (0-6)
       "viweek <= number of week
@@ -1008,28 +1017,34 @@ function! Calendar(...)
 
     " or not
     if dir
-      execute 'bo '.vheight.'split __Calendar'
+      silent execute 'bo '.vheight.'split __Calendar'
       setlocal winfixheight
     else
-      execute 'to '.vcolumn.'vsplit __Calendar'
+      silent execute 'to '.vcolumn.'vsplit __Calendar'
       setlocal winfixwidth
     endif
     call s:CalendarBuildKeymap(dir, vyear, vmnth)
     setlocal noswapfile
     setlocal buftype=nofile
     setlocal bufhidden=delete
-    setlocal nonumber
+    exe "setlocal " . g:calendar_number_option
+    exe "setlocal foldcolumn=" . g:calendar_foldcolumn_option
+    let nontext_columns = &foldcolumn + (&nu * &numberwidth)
+    if exists('+relativenumber')
+        exe "setlocal " . g:calendar_relativenumber_option
+        let nontext_columns += &rnu * &numberwidth
+    endif
     " Without this, the 'sidescrolloff' setting may cause the left side of the
     " calendar to disappear if the last inserted element is near the right
     " window border.
     setlocal wrap
     setlocal norightleft
-    setlocal foldcolumn=0
     setlocal modifiable
     setlocal nolist
     let b:Calendar='Calendar'
     setlocal filetype=calendar
     " is this a vertical (0) or a horizontal (1) split?
+    exe vcolumn + nontext_columns . "wincmd |"
   endif
   if g:calendar_datetime == "statusline"
     setlocal statusline=%{strftime('%c')}
