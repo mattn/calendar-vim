@@ -1256,7 +1256,7 @@ endfunction
 "*****************************************************************
 function! s:CalendarBuildKeymap(dir, vyear, vmnth)
   " make keymap
-  execute 'nnoremap <silent> <buffer> q :close<bar>wincmd p<cr>'
+  execute 'nnoremap <silent> <buffer> q <C-w>c'
 
   execute 'nnoremap <silent> <buffer> <Plug>CalendarDoAction  :call <SID>CalendarDoAction()<cr>'
   execute 'nnoremap <silent> <buffer> <Plug>CalendarDoAction  :call <SID>CalendarDoAction()<cr>'
