@@ -1256,12 +1256,12 @@ endfunction
 "*****************************************************************
 function! s:CalendarBuildKeymap(dir, vyear, vmnth)
   " make keymap
-  execute 'nnoremap <silent> <buffer> q <C-w>c'
+  nnoremap <silent> <buffer> q <C-w>c
 
-  execute 'nnoremap <silent> <buffer> <Plug>CalendarDoAction  :call <SID>CalendarDoAction()<cr>'
-  execute 'nnoremap <silent> <buffer> <Plug>CalendarDoAction  :call <SID>CalendarDoAction()<cr>'
-  execute 'nnoremap <silent> <buffer> <Plug>CalendarGotoToday :call Calendar(b:CalendarDir)<cr>'
-  execute 'nnoremap <silent> <buffer> <Plug>CalendarShowHelp  :call <SID>CalendarHelp()<cr>'
+  nnoremap <silent> <buffer> <Plug>CalendarDoAction  :call <SID>CalendarDoAction()<cr>
+  nnoremap <silent> <buffer> <Plug>CalendarDoAction  :call <SID>CalendarDoAction()<cr>
+  nnoremap <silent> <buffer> <Plug>CalendarGotoToday :call Calendar(b:CalendarDir)<cr>
+  nnoremap <silent> <buffer> <Plug>CalendarShowHelp  :call <SID>CalendarHelp()<cr>
   execute 'nnoremap <silent> <buffer> <Plug>CalendarReDisplay :call Calendar(' . a:dir . ',' . a:vyear . ',' . a:vmnth . ')<cr>'
   let pnav = s:GetToken(g:calendar_navi_label, ',', 1)
   let nnav = s:GetToken(g:calendar_navi_label, ',', 3)
