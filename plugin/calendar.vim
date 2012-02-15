@@ -2,7 +2,7 @@
 " What Is This: Calendar
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 27-Jan-2011.
+" Last Change: 15-Feb-2012.
 " Version: 2.5
 " Thanks:
 "     SethMilliken                  : gave a hint for 2.4
