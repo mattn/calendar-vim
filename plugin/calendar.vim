@@ -1164,6 +1164,9 @@ function! Calendar(...)
     silent execute "normal! gg/\*\<cr>"
   endif
 
+  " clear ExtraWhitespace highlighting
+  execute 'highlight clear ExtraWhitespace'
+
   return ''
 endfunction
 
