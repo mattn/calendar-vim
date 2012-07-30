@@ -375,11 +375,13 @@ endif
 command! -nargs=* Calendar  call Calendar(0,<f-args>)
 command! -nargs=* CalendarH call Calendar(1,<f-args>)
 
-if !hasmapto("<Plug>CalendarV")
-  nmap <unique> <Leader>cal <Plug>CalendarV
-endif
-if !hasmapto("<Plug>CalendarH")
-  nmap <unique> <Leader>caL <Plug>CalendarH
+if !exists("g:calendar_no_mappings") || !g:calendar_no_mappings
+  if !hasmapto("<Plug>CalendarV")
+    nmap <unique> <Leader>cal <Plug>CalendarV
+  endif
+  if !hasmapto("<Plug>CalendarH")
+    nmap <unique> <Leader>caL <Plug>CalendarH
+  endif
 endif
 nnoremap <silent> <Plug>CalendarV :cal Calendar(0)<CR>
 nnoremap <silent> <Plug>CalendarH :cal Calendar(1)<CR>
@@ -1326,3 +1328,5 @@ hi def link CalWeeknm   Comment
 hi def link CalToday    Directory
 hi def link CalHeader   Special
 hi def link CalMemo     Identifier
+
+" vi: et sw=2 ts=2
