@@ -2,7 +2,7 @@
 " What Is This: Calendar
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 15-Feb-2012.
+" Last Change: 2012 Aug 04
 " Version: 2.5
 " Thanks:
 "     SethMilliken                  : gave a hint for 2.4
@@ -58,6 +58,7 @@
 "     <Leader>caL
 "       show horizontal calendar ...
 " ChangeLog:
+"     x.x  : new week number format
 "     2.5  : bug fix, 7.2 don't have relativenumber.
 "     2.4  : added g:calendar_options.
 "     2.3  : week number like ISO8601 
@@ -265,6 +266,7 @@
 "       let g:calendar_weeknm = 2 " WK 1
 "       let g:calendar_weeknm = 3 " KW01
 "       let g:calendar_weeknm = 4 " KW 1
+"       let g:calendar_weeknm = 5 " 1
 "
 "     *if you want to show the current date and time, add below to your .vimrc:
 "
@@ -727,6 +729,9 @@ function! Calendar(...)
       endif
 
       let vcolumn = vcolumn + 5
+      if g:calendar_weeknm == 5
+        let vcolumn = vcolumn - 2
+      endif
     endif
 
     "--------------------------------------------------------------
@@ -849,12 +854,16 @@ function! Calendar(...)
               let vdisplay2=vdisplay2.'KW0'.viweek
             elseif g:calendar_weeknm == 4
               let vdisplay2=vdisplay2.'KW '.viweek
+            elseif g:calendar_weeknm == 5
+              let vdisplay2=vdisplay2.' '.viweek
             endif
           else
             if g:calendar_weeknm <= 2
               let vdisplay2=vdisplay2.'WK'.viweek
-            else
+            elseif g:calendar_weeknm == 3 || g:calendar_weeknm == 4
               let vdisplay2=vdisplay2.'KW'.viweek
+            elseif g:calendar_weeknm == 5 
+              let vdisplay2=vdisplay2.viweek
             endif
           endif
           let viweek = viweek + 1
@@ -890,12 +899,16 @@ function! Calendar(...)
             let vdisplay2=vdisplay2.'KW0'.viweek
           elseif g:calendar_weeknm == 4
             let vdisplay2=vdisplay2.'KW '.viweek
+          elseif g:calendar_weeknm == 5
+            let vdisplay2=vdisplay2.' '.viweek
           endif
         else
           if g:calendar_weeknm <= 2
             let vdisplay2=vdisplay2.'WK'.viweek
-          else
-            let vdisplay2=vdisplay2.'KW'.viweek
+		  elseif g:calendar_weeknm == 3 || g:calendar_weeknm == 4
+		    let vdisplay2=vdisplay2.'KW'.viweek
+		  elseif g:calendar_weeknm == 5 
+		    let vdisplay2=vdisplay2.viweek
           endif
         endif
       endif
@@ -1126,29 +1139,22 @@ function! Calendar(...)
   endif
 
   " saturday, sunday
-  let dayorspace = '\(\*\|\s\)\(\s\|\d\)\(\s\|\d\)'
-  if !exists('g:calendar_weeknm') || g:calendar_weeknm <= 2
-    let wknmstring = '\(\sWK[0-9\ ]\d\)*'
-  else
-    let wknmstring = '\(\sKW[0-9\ ]\d\)*'
-  endif
-  let eolnstring = '\s\(|\|$\)'
+
   if exists('g:calendar_monday')
-    execute "syn match CalSaturday display \'"
-      \.dayorspace.dayorspace.wknmstring.eolnstring."\'ms=s+1,me=s+3"
-    execute "syn match CalSunday display \'"
-      \.dayorspace.wknmstring.eolnstring."\'ms=s+1,me=s+3"
+    if dir
+      syn match CalSaturday display /|.\{15}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
+      syn match CalSunday display /|.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
+    else
+      syn match CalSaturday display /^.\{15}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
+      syn match CalSunday display /^.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
+    endif
   else
     if dir
-      execute "syn match CalSaturday display \'"
-        \.dayorspace.wknmstring.eolnstring."\'ms=s+1,me=s+3"
-      execute "syn match CalSunday display \'\|"
-        \.dayorspace."\'ms=s+2,me=s+4"
+      syn match CalSaturday display /|.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
+      syn match CalSunday display /|\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
     else
-      execute "syn match CalSaturday display \'"
-        \.dayorspace.wknmstring.eolnstring."\'ms=s+1,me=s+3"
-      execute "syn match CalSunday display \'^"
-        \.dayorspace."\'ms=s+1,me=s+3"
+      syn match CalSaturday display /^.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
+      syn match CalSunday display /^\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
     endif
   endif
 
