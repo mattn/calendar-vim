@@ -3,10 +3,10 @@
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 2012 Aug 04
-" Version: 2.5
+" Version: 2.6
 " Thanks:
 "     SethMilliken                  : gave a hint for 2.4
-"     bw1                           : bug fix
+"     bw1                           : bug fix, new weeknm format
 "     Ingo Karkat                   : bug fix
 "     Thinca                        : bug report, bug fix
 "     Yu Pei                        : bug report
@@ -58,7 +58,7 @@
 "     <Leader>caL
 "       show horizontal calendar ...
 " ChangeLog:
-"     x.x  : new week number format
+"     2.6  : new week number format
 "     2.5  : bug fix, 7.2 don't have relativenumber.
 "     2.4  : added g:calendar_options.
 "     2.3  : week number like ISO8601 
@@ -325,7 +325,7 @@
 "       :echo calendar_version
 " GetLatestVimScripts: 52 1 :AutoInstall: calendar.vim
 
-let g:calendar_version = "2.5"
+let g:calendar_version = "2.6"
 if &compatible
   finish
 endif
