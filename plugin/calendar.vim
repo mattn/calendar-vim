@@ -61,7 +61,7 @@
 "     2.6  : new week number format
 "     2.5  : bug fix, 7.2 don't have relativenumber.
 "     2.4  : added g:calendar_options.
-"     2.3  : week number like ISO8601 
+"     2.3  : week number like ISO8601
 "            g:calendar_monday and g:calendar_weeknm work together
 "     2.2  : http://gist.github.com/355513#file_customizable_keymap.diff
 "            http://gist.github.com/355513#file_winfixwidth.diff
@@ -104,7 +104,7 @@
 "     1.3w : bug fix
 "            on leap year, week number decreases.
 "     1.3v : bug fix
-"            add nowrapscan 
+"            add nowrapscan
 "            use s:bufautocommandsset for making title
 "            don't focus to navi when doubleclick bottom next>.
 "     1.3u : bug fix
@@ -162,7 +162,7 @@
 "            bug fix for calculates date.
 "     1.3c : bug fix for MakeDir()
 "            if CalendarMakeDir(sfile) != 0
-"               v 
+"               v
 "            if s:CalendarMakeDir(sfile) != 0
 "     1.3b : bug fix for calendar_monday.
 "            it didn't work g:calendar_monday correctly.
@@ -708,7 +708,7 @@ function! Calendar(...)
       " 0  1  2  3  4  5  6  vnweek
 
       let vfweek =((vparam % 7)  -vnweek+ 14-2) % 7
-      let viweek = (vparam - vfweek-2+7 ) / 7 +1 
+      let viweek = (vparam - vfweek-2+7 ) / 7 +1
 
       if vfweek < 3
          let viweek = viweek - 1
@@ -716,13 +716,13 @@ function! Calendar(...)
 
       "vfweekl  <=year length
       let vfweekl = 52
-      if (vfweek == 3)  
+      if (vfweek == 3)
         let vfweekl = 53
       endif
 
       if viweek == 0
         let viweek = 52
-        if ((vfweek == 2) && (((vyear-1) % 4) !=0)) 
+        if ((vfweek == 2) && (((vyear-1) % 4) !=0))
               \ || ((vfweek == 1) && (((vyear-1) % 4) ==0))
           let viweek = 53
         endif
@@ -742,7 +742,7 @@ function! Calendar(...)
       if g:calendar_erafmt =~ '.*,[+-]*\d\+'
         let veranum=substitute(g:calendar_erafmt,'.*,\([+-]*\d\+\)','\1','')
         if vyear+veranum > 0
-          let vdisplay2=substitute(g:calendar_erafmt,'\(.*\),.*','\1','') 
+          let vdisplay2=substitute(g:calendar_erafmt,'\(.*\),.*','\1','')
           let vdisplay2=vdisplay2.(vyear+veranum).'/'.vmnth.'('
         else
           let vdisplay2=vyear.'/'.vmnth.'('
@@ -862,7 +862,7 @@ function! Calendar(...)
               let vdisplay2=vdisplay2.'WK'.viweek
             elseif g:calendar_weeknm == 3 || g:calendar_weeknm == 4
               let vdisplay2=vdisplay2.'KW'.viweek
-            elseif g:calendar_weeknm == 5 
+            elseif g:calendar_weeknm == 5
               let vdisplay2=vdisplay2.viweek
             endif
           endif
@@ -881,7 +881,7 @@ function! Calendar(...)
     endwhile
 
     " if it is needed, fill with space
-    if vinpcur % 7 
+    if vinpcur % 7
       while (vinpcur % 7 != 0)
         let vdisplay2=vdisplay2.'   '
         let vinpcur = vinpcur + 1
@@ -907,7 +907,7 @@ function! Calendar(...)
             let vdisplay2=vdisplay2.'WK'.viweek
 		  elseif g:calendar_weeknm == 3 || g:calendar_weeknm == 4
 		    let vdisplay2=vdisplay2.'KW'.viweek
-		  elseif g:calendar_weeknm == 5 
+		  elseif g:calendar_weeknm == 5
 		    let vdisplay2=vdisplay2.viweek
           endif
         endif
@@ -1222,7 +1222,7 @@ function! s:CalendarDiary(day, month, year, week, dir)
       return
     endif
   endif
-  let sfile = expand(sfile) . "/" . a:day . ".cal"
+  let sfile = expand(sfile) . "/" . a:day . ".md"
   let sfile = substitute(sfile, ' ', '\\ ', 'g')
   let vbufnr = bufnr('__Calendar')
 
@@ -1245,7 +1245,7 @@ endfunc
 "*   year  : year of sign
 "*****************************************************************
 function! s:CalendarSign(day, month, year)
-  let sfile = g:calendar_diary."/".a:year."/".a:month."/".a:day.".cal"
+  let sfile = g:calendar_diary."/".a:year."/".a:month."/".a:day.".md"
   return filereadable(expand(sfile))
 endfunction
 
