@@ -1227,7 +1227,9 @@ function! s:CalendarDiary(day, month, year, week, dir)
   let vbufnr = bufnr('__Calendar')
 
   " load the file
-  exe "sp " . sfile
+  " exe "sp " . sfile
+  exe "wincmd l"
+  exe "edit  " . sfile
   setlocal ft=calendar
   let dir = getbufvar(vbufnr, "CalendarDir")
   let vyear = getbufvar(vbufnr, "CalendarYear")
