@@ -43,20 +43,6 @@
 "     Suresh Govindachar            : gave a hint for 1.2, bug fix
 "     Michael Geddes                : bug fix
 "     Leif Wickland                 : bug fix
-" Usage:
-"     :Calendar
-"       show calendar at this year and this month
-"     :Calendar 8
-"       show calendar at this year and given month
-"     :Calendar 2001 8
-"       show calendar at given year and given month
-"     :CalendarH ...
-"       show horizontal calendar ...
-"
-"     <Leader>cal
-"       show calendar in normal mode
-"     <Leader>caL
-"       show horizontal calendar ...
 " ChangeLog:
 "     2.6  : new week number format
 "     2.5  : bug fix, 7.2 don't have relativenumber.
@@ -214,115 +200,6 @@
 "     1.0  : first release.
 " TODO:
 "     add the option for diary which is separate or single file.
-" Additional:
-"     *if you want to keep focus when goto next or prev calendar,
-"       add the following to your .vimrc:
-"
-"       let g:calendar_focus_today = 1
-"
-"     *if you want to place the mark('*' or '+') after the day,
-"       add the following to your .vimrc:
-"
-"       let g:calendar_mark = 'right'
-"
-"       NOTE:you can set 'left', 'left-fit', 'right' for this option.
-"
-"     *if you want to use navigator,
-"       add the following to your .vimrc:
-"
-"       let g:calendar_navi = ''
-"
-"       NOTE:you can set 'top', 'bottom', 'both' for this option.
-"
-"     *if you want to replace navigator in your language,
-"       add the following to your .vimrc:
-"
-"       let g:calendar_navi_label = 'Prev,Today,Next'
-"
-"       NOTE:it must be separated with ','.
-"
-"     *if you want to replace calendar header,
-"       add the following in your favorite language to your .vimrc:
-"
-"       let g:calendar_erafmt = 'Heisei,-1988'   " for Japanese
-"       (name of era and diff with A.D.)
-"
-"     *if you want to replace calendar ruler,
-"       add the following in your favorite language to your .vimrc:
-"
-"       let g:calendar_mruler = 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec'
-"       let g:calendar_wruler = 'Su Mo Tu We Th Fr Sa'
-"
-"     *if you want the week to start with monday, add below to your .vimrc:
-"
-"       let g:calendar_monday = 1
-"       (You don't have to to change g:calendar_wruler!)
-"
-"     *if you want to show week number, add this to your .vimrc:
-"
-"       set g:calendar_weeknm as below
-"
-"       let g:calendar_weeknm = 1 " WK01
-"       let g:calendar_weeknm = 2 " WK 1
-"       let g:calendar_weeknm = 3 " KW01
-"       let g:calendar_weeknm = 4 " KW 1
-"       let g:calendar_weeknm = 5 " 1
-"
-"     *if you want to show the current date and time, add below to your .vimrc:
-"
-"       let g:calendar_datetime = 'title'
-"
-"       NOTE:you can set 'title', 'statusline', '' for this option.
-"
-"     *if you want to hook calender when pressing enter,
-"       add this to your .vimrc:
-"
-"       function MyCalAction(day,month,year,week,dir)
-"         " day   : day you actioned
-"         " month : month you actioned
-"         " year  : year you actioned
-"         " week  : day of week (Mo=1 ... Su=7)
-"         " dir   : direction of calendar
-"       endfunction
-"       let calendar_action = 'MyCalAction'
-"
-"       also, Calendar call following actions when begin or end of display.
-"       them actions are called at one each time when it show 3 months display.
-"
-"       function MyCalActionBegin()
-"       endfunction
-"       let calendar_begin = 'MyCalActionBegin'
-"
-"       function MyCalActionEnd()
-"       endfunction
-"       let calendar_end = 'MyCalActionEnd'
-"
-"     *if you want to show sign in calender,
-"       add this to your .vimrc:
-"
-"       function MyCalSign(day,month,year)
-"         " day   : day you actioned
-"         " month : month you actioned
-"         " year  : year you actioned
-"         if a:day == 1 && a:month == 1
-"           return 1 " happy new year
-"         else
-"           return 0 " or not
-"         endif
-"       endfunction
-"       let calendar_sign = 'MyCalSign'
-"
-"     *if you want to hook calender when pressing 'today',
-"       add this to your .vimrc:
-"
-"       function MyCalToday()
-"       endfunction
-"       let calendar_today = 'MyCalToday'
-"
-"     *if you want to get the version of this.
-"       type below.
-"
-"       :echo calendar_version
 " GetLatestVimScripts: 52 1 :AutoInstall: calendar.vim
 
 let g:calendar_version = "2.6"
