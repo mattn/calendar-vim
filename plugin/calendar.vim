@@ -5,6 +5,7 @@
 " Last Change: 2012 Aug 04
 " Version: 2.6
 " Thanks:
+"     Daniel P. Wright              : doc/calendar.txt
 "     SethMilliken                  : gave a hint for 2.4
 "     bw1                           : bug fix, new weeknm format
 "     Ingo Karkat                   : bug fix
