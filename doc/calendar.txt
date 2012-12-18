@@ -98,6 +98,7 @@ To show the week number, set this variable.  There are four valid settings: >
   let g:calendar_weeknm = 2 " WK 1
   let g:calendar_weeknm = 3 " KW01
   let g:calendar_weeknm = 4 " KW 1
+  let g:calendar_weeknm = 5 " 1
 <
 
                                                 *g:calendar_datetime*
