@@ -997,6 +997,13 @@ function! Calendar(...)
     silent put! =vdisplay1
   endif
 
+
+  " Remove Trailing Whitespace
+  let _s=@/
+  %s/\s\+$//e
+  " Clean up: restore previous search history
+  let @/=_s
+
   setlocal nomodifiable
   " In case we've gotten here from insert mode (via <C-O>:Calendar<CR>)...
   stopinsert
