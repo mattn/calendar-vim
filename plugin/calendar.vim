@@ -249,6 +249,21 @@ if !exists("g:calendar_options")
   endif
 endif
 
+
+"*****************************************************************
+"* Default Calendar key bindings
+"*****************************************************************
+let s:calendar_default_keys = {}
+let s:calendar_default_keys['close'] = 'q'
+let s:calendar_default_keys['do_action'] = '<CR>'
+let s:calendar_default_keys['goto_today'] = 't'
+let s:calendar_default_keys['show_help'] = '?'
+let s:calendar_default_keys['redisplay'] = 'r'
+let s:calendar_default_keys['goto_next_month'] = '<RIGHT>'
+let s:calendar_default_keys['goto_prev_month'] = '<LEFT>'
+let s:calendar_default_keys['goto_next_year'] = '<UP>'
+let s:calendar_default_keys['goto_prev_year'] = '<DOWN>'
+
 "*****************************************************************
 "* Calendar commands
 "*****************************************************************
@@ -1137,13 +1152,22 @@ function! s:CalendarVar(var)
 endfunction
 
 "*****************************************************************
+"* CalendarGetKeyBinding: get key for action
+"*----------------------------------------------------------------
+function! s:CalendarGetKeyBinding(action)
+  if exists("g:calendar_keys") && has_key(g:calendar_keys,a:action)
+    return g:calendar_keys[a:action]
+  else
+    return s:calendar_default_keys[a:action]
+  endif
+endfunction
+
+"*****************************************************************
 "* CalendarBuildKeymap : build keymap
 "*----------------------------------------------------------------
 "*****************************************************************
 function! s:CalendarBuildKeymap(dir, vyear, vmnth)
   " make keymap
-  nnoremap <buffer> q <C-w>c
-
   nnoremap <silent> <buffer> <Plug>CalendarDoAction  :call <SID>CalendarDoAction()<cr>
   nnoremap <silent> <buffer> <Plug>CalendarDoAction  :call <SID>CalendarDoAction()<cr>
   nnoremap <silent> <buffer> <Plug>CalendarGotoToday :call Calendar(b:CalendarDir)<cr>
@@ -1156,16 +1180,18 @@ function! s:CalendarBuildKeymap(dir, vyear, vmnth)
   execute 'nnoremap <silent> <buffer> <Plug>CalendarGotoPrevYear  :call Calendar('.a:dir.','.(a:vyear-1).','.a:vmnth.')<cr>'
   execute 'nnoremap <silent> <buffer> <Plug>CalendarGotoNextYear  :call Calendar('.a:dir.','.(a:vyear+1).','.a:vmnth.')<cr>'
 
-  nmap <buffer> <CR>          <Plug>CalendarDoAction
   nmap <buffer> <2-LeftMouse> <Plug>CalendarDoAction
-  nmap <buffer> t             <Plug>CalendarGotoToday
-  nmap <buffer> ?             <Plug>CalendarShowHelp
-  nmap <buffer> r             <Plug>CalendarReDisplay
 
-  nmap <buffer> <Left>  <Plug>CalendarGotoPrevMonth
-  nmap <buffer> <Right> <Plug>CalendarGotoNextMonth
-  nmap <buffer> <Up>    <Plug>CalendarGotoPrevYear
-  nmap <buffer> <Down>  <Plug>CalendarGotoNextYear
+  execute 'nmap <buffer> ' . s:CalendarGetKeyBinding('close') . ' <C-w>c'
+  execute 'nmap <buffer> ' . s:CalendarGetKeyBinding('do_action') . ' <Plug>CalendarDoAction'
+  execute 'nmap <buffer> ' . s:CalendarGetKeyBinding('goto_today') . ' <Plug>CalendarGotoToday'
+  execute 'nmap <buffer> ' . s:CalendarGetKeyBinding('show_help') . ' <Plug>CalendarShowHelp'
+  execute 'nmap <buffer> ' . s:CalendarGetKeyBinding('redisplay') . ' <Plug>CalendarRedisplay'
+
+  execute 'nmap <buffer> ' . s:CalendarGetKeyBinding('goto_next_month') . ' <Plug>CalendarGotoNextMonth'
+  execute 'nmap <buffer> ' . s:CalendarGetKeyBinding('goto_prev_month') . ' <Plug>CalendarGotoPrevMonth'
+  execute 'nmap <buffer> ' . s:CalendarGetKeyBinding('goto_next_year') . ' <Plug>CalendarGotoNextYear'
+  execute 'nmap <buffer> ' . s:CalendarGetKeyBinding('goto_prev_year') . ' <Plug>CalendarGotoPrevYear'
 endfunction
 
 "*****************************************************************
@@ -1173,19 +1199,26 @@ endfunction
 "*----------------------------------------------------------------
 "*****************************************************************
 function! s:CalendarHelp()
+  let keys={}
+  for k in keys(s:calendar_default_keys)
+    let keys[k] = s:CalendarGetKeyBinding(k)
+  endfor
+  let max_key_len=max(map(copy(values(keys)),'len(v:val)'))
+  let key_len_diff=map(copy(keys),'2+max_key_len-len(v:val)')
+
   echohl None
   echo 'Calendar version ' . g:calendar_version
   echohl SpecialKey
-  echo '<Left>    : goto prev month'
-  echo '<Right>   : goto next month'
-  echo '<Up>      : goto prev year'
-  echo '<Down>    : goto next year'
-  echo 't         : goto today'
-  echo 'q         : close window'
-  echo 'r         : re-display window'
-  echo '?         : show this help'
+  echo keys['goto_prev_month']  . repeat(' ',key_len_diff['goto_prev_month']) . ': goto prev month'
+  echo keys['goto_next_month']  . repeat(' ',key_len_diff['goto_next_month']) . ': goto next month'
+  echo keys['goto_prev_year']   . repeat(' ',key_len_diff['goto_prev_year'])  . ': goto prev year'
+  echo keys['goto_next_year']   . repeat(' ',key_len_diff['goto_next_year'])  . ': goto next year'
+  echo keys['goto_today']       . repeat(' ',key_len_diff['goto_today'])      . ': goto today'
+  echo keys['close']            . repeat(' ',key_len_diff['close'])           . ': close window'
+  echo keys['redisplay']        . repeat(' ',key_len_diff['redisplay'])       . ': re-display window'
+  echo keys['show_help']        . repeat(' ',key_len_diff['show_help'])       . ': show this help'
   if g:calendar_action == "<SID>CalendarDiary"
-    echo '<cr>      : show diary'
+    echo keys['do_action']      . repeat(' ',key_len_diff['do_action'])       . ': show diary'
   endif
   echo ''
   echohl Question

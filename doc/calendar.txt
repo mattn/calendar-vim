@@ -46,6 +46,23 @@ Keeps focus when moving to next or previous calendar: >
   let g:calendar_focus_today = 1
 <
 
+                                                *g:calendar_keys*
+To change the key bindings in the calendar window, add entries to this
+dictionary.   Possible keys, the action bound to the keycode given in the
+respective value for this key and the default binding are listed below.
+'close'                     Closes calendar window.             'q'
+'do_action'                 Executes |calendar_action|.           '<CR>'
+'goto_today'                Executes |calendar_today|.            't'
+'show_help'                 Displays a short help message.      '?'
+'redisplay'                 Redraws calendar window.            'r'
+'goto_next_month'           Jumps to the next month.            '<Right>'
+'goto_prev_month'           Jumps to the previous month.        '<Left>'
+'goto_next_year'            Jumps to the next month.            '<Up>'
+'goto_prev_year'            Jumps to the previous month.        '<Down>'
+An example in your .vimrc might look like this: >
+  let g:calendar_keys = { 'goto_next_month':'<C-Right>, 'goto_prev_month':'<C-Left>'}
+<
+
                                                 *g:calendar_mark*
 Place a '*' or '+' mark after the day.  Acceptable values are 'left',
 'left-fit', and 'right': >
