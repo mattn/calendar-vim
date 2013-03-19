@@ -2,9 +2,10 @@
 " What Is This: Calendar
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 2012 Aug 04
-" Version: 2.6
+" Last Change: 2013 Mar 19
+" Version: 2.7
 " Thanks:
+"     Tobias Columbus               : customizable key bindings
 "     Daniel P. Wright              : doc/calendar.txt
 "     SethMilliken                  : gave a hint for 2.4
 "     bw1                           : bug fix, new weeknm format
@@ -45,6 +46,7 @@
 "     Michael Geddes                : bug fix
 "     Leif Wickland                 : bug fix
 " ChangeLog:
+"     2.7  : vim7ish, customizable key bindings
 "     2.6  : new week number format
 "     2.5  : bug fix, 7.2 don't have relativenumber.
 "     2.4  : added g:calendar_options.
@@ -203,7 +205,7 @@
 "     add the option for diary which is separate or single file.
 " GetLatestVimScripts: 52 1 :AutoInstall: calendar.vim
 
-let g:calendar_version = "2.6"
+let g:calendar_version = "2.7"
 if &compatible
   finish
 endif
@@ -213,11 +215,11 @@ endif
 command! -nargs=* Calendar  call calendar#show(0,<f-args>)
 command! -nargs=* CalendarH call calendar#show(1,<f-args>)
 
-if !exists("g:calendar_no_mappings") || !g:calendar_no_mappings
-  if !hasmapto("<Plug>CalendarV")
+if get(g:, 'calendar_no_mappings', 0)
+  if !hasmapto('<Plug>CalendarV')
     nmap <unique> <Leader>cal <Plug>CalendarV
   endif
-  if !hasmapto("<Plug>CalendarH")
+  if !hasmapto('<Plug>CalendarH')
     nmap <unique> <Leader>caL <Plug>CalendarH
   endif
 endif
