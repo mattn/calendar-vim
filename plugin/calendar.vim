@@ -287,35 +287,6 @@ nnoremap <silent> <Plug>CalendarV :cal Calendar(0)<CR>
 nnoremap <silent> <Plug>CalendarH :cal Calendar(1)<CR>
 
 "*****************************************************************
-"* GetToken : get token from source with count
-"*----------------------------------------------------------------
-"*   src : source
-"*   dlm : delimiter
-"*   cnt : skip count
-"*****************************************************************
-function! s:GetToken(src,dlm,cnt)
-  let tokn_hit=0     " flag of found
-  let tokn_fnd=''    " found path
-  let tokn_spl=''    " token
-  let tokn_all=a:src " all source
-
-  " safe for end
-  let tokn_all = tokn_all.a:dlm
-  while 1
-    let tokn_spl = strpart(tokn_all,0,match(tokn_all,a:dlm))
-    let tokn_hit = tokn_hit + 1
-    if tokn_hit == a:cnt
-      return tokn_spl
-    endif
-    let tokn_all = strpart(tokn_all,strlen(tokn_spl.a:dlm))
-    if tokn_all == ''
-      break
-    endif
-  endwhile
-  return ''
-endfunction
-
-"*****************************************************************
 "* CalendarDoAction : call the action handler function
 "*----------------------------------------------------------------
 "*****************************************************************
@@ -324,19 +295,19 @@ function! s:CalendarDoAction(...)
   if exists('g:calendar_navi')
     let navi = (a:0 > 0)? a:1 : expand("<cWORD>")
     let curl = line(".")
-    if navi == '<' . s:GetToken(g:calendar_navi_label, ',', 1)
+    if navi == '<' . get(split(g:calendar_navi_label, ','), 0, '')
       if b:CalendarMonth > 1
         call Calendar(b:CalendarDir, b:CalendarYear, b:CalendarMonth-1)
       else
         call Calendar(b:CalendarDir, b:CalendarYear-1, 12)
       endif
-    elseif navi == s:GetToken(g:calendar_navi_label, ',', 3) . '>'
+    elseif navi == get(split(g:calendar_navi_label, ','), 2, '') . '>'
       if b:CalendarMonth < 12
         call Calendar(b:CalendarDir, b:CalendarYear, b:CalendarMonth+1)
       else
         call Calendar(b:CalendarDir, b:CalendarYear+1, 1)
       endif
-    elseif navi == s:GetToken(g:calendar_navi_label, ',', 2)
+    elseif navi == get(split(g:calendar_navi_label, ','), 1, '')
       call Calendar(b:CalendarDir)
       if exists('g:calendar_today')
         exe "call " . g:calendar_today . "()"
@@ -656,9 +627,9 @@ function! Calendar(...)
         \ 1,(vcolumn-strlen(vdisplay2))/2-2).vdisplay2
     endif
     if exists('g:calendar_mruler') && g:calendar_mruler !~ "^\s*$"
-      let vdisplay2=vdisplay2.s:GetToken(g:calendar_mruler,',',vmnth).')'."\n"
+      let vdisplay2=vdisplay2 . get(split(g:calendar_mruler, ','), vmnth-1, '').')'."\n"
     else
-      let vdisplay2=vdisplay2.vsmnth.')'."\n"
+      let vdisplay2=vdisplay2 . vsmnth.')'."\n"
     endif
     let vwruler = "Su Mo Tu We Th Fr Sa"
     if exists('g:calendar_wruler') && g:calendar_wruler !~ "^\s*$"
@@ -825,8 +796,8 @@ function! Calendar(...)
       "--------------------------------------------------------------
       let vtokline = 1
       while 1
-        let vtoken1 = s:GetToken(vdisplay1,"\n",vtokline)
-        let vtoken2 = s:GetToken(vdisplay2,"\n",vtokline)
+        let vtoken1 = get(split(vdisplay1, "\n"), vtokline-1, '')
+        let vtoken2 = get(split(vdisplay2, "\n"), vtokline-1, '')
         if vtoken1 == '' && vtoken2 == ''
           break
         endif
@@ -853,7 +824,7 @@ function! Calendar(...)
       "--------------------------------------------------------------
       let vtokline = 1
       while 1
-        let vtoken1 = s:GetToken(vdisplay1,"\n",vtokline)
+        let vtoken1 = get(split(vdisplay1, "\n"), vtokline-1, '')
         if vtoken1 == ''
           break
         endif
@@ -867,7 +838,7 @@ function! Calendar(...)
       endif
       let vtokline = 1
       while 1
-        let vtoken2 = s:GetToken(vdisplay2,"\n",vtokline)
+        let vtoken2 = get(split(vdisplay2, "\n"), vtokline-1, '')
         if vtoken2 == ''
           break
         endif
@@ -967,9 +938,9 @@ function! Calendar(...)
   " navi
   if exists('g:calendar_navi')
     let navi_label = '<'
-        \.s:GetToken(g:calendar_navi_label, ',', 1).' '
-        \.s:GetToken(g:calendar_navi_label, ',', 2).' '
-        \.s:GetToken(g:calendar_navi_label, ',', 3).'>'
+        \.get(split(g:calendar_navi_label, ','), 0, '').' '
+        \.get(split(g:calendar_navi_label, ','), 1, '').' '
+        \.get(split(g:calendar_navi_label, ','), 2, '').'>'
     if dir
       let navcol = vcolumn + (vcolumn-strlen(navi_label)+2)/2
     else
@@ -1030,10 +1001,10 @@ function! Calendar(...)
   " navi
   if exists('g:calendar_navi')
     exec "silent! syn match CalNavi display \"\\(<"
-        \.s:GetToken(g:calendar_navi_label, ',', 1)."\\|"
-        \.s:GetToken(g:calendar_navi_label, ',', 3).">\\)\""
+        \.get(split(g:calendar_navi_label, ','), 0, '')."\\|"
+        \.get(split(g:calendar_navi_label, ','), 2, '').">\\)\""
     exec "silent! syn match CalNavi display \"\\s"
-        \.s:GetToken(g:calendar_navi_label, ',', 2)."\\s\"hs=s+1,he=e-1"
+        \.get(split(g:calendar_navi_label, ','), 1, '')."\\s\"hs=s+1,he=e-1"
   endif
 
   " saturday, sunday
@@ -1167,8 +1138,8 @@ function! s:CalendarBuildKeymap(dir, vyear, vmnth)
   nnoremap <silent> <buffer> <Plug>CalendarGotoToday :call Calendar(b:CalendarDir)<cr>
   nnoremap <silent> <buffer> <Plug>CalendarShowHelp  :call <SID>CalendarHelp()<cr>
   execute 'nnoremap <silent> <buffer> <Plug>CalendarReDisplay :call Calendar(' . a:dir . ',' . a:vyear . ',' . a:vmnth . ')<cr>'
-  let pnav = s:GetToken(g:calendar_navi_label, ',', 1)
-  let nnav = s:GetToken(g:calendar_navi_label, ',', 3)
+  let pnav = get(split(g:calendar_navi_label, ','), 0, '')
+  let nnav = get(split(g:calendar_navi_label, ','), 2, '')
   execute 'nnoremap <silent> <buffer> <Plug>CalendarGotoPrevMonth :call <SID>CalendarDoAction("<' . pnav . '")<cr>'
   execute 'nnoremap <silent> <buffer> <Plug>CalendarGotoNextMonth :call <SID>CalendarDoAction("' . nnav . '>")<cr>'
   execute 'nnoremap <silent> <buffer> <Plug>CalendarGotoPrevYear  :call Calendar('.a:dir.','.(a:vyear-1).','.a:vmnth.')<cr>'
