@@ -192,10 +192,4 @@ and also on VimScripts:
 
   http://www.vim.org/scripts/script.php?script_id=52
 
-                                                *calendar_version*
-In order to see which version of the script you are running, enter the
-following at the vim command line: >
-  :echo calendar_version
-<
-
 vim:tw=78:et:ft=help:norl:
