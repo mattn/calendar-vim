@@ -1157,13 +1157,6 @@ function! s:CalendarVar(var)
 endfunction
 
 "*****************************************************************
-"* CalendarGetKeyBinding: get key for action
-"*----------------------------------------------------------------
-function! s:CalendarGetKeyBinding(action)
-  return s:calendar_keys[a:action]
-endfunction
-
-"*****************************************************************
 "* CalendarBuildKeymap : build keymap
 "*----------------------------------------------------------------
 "*****************************************************************
