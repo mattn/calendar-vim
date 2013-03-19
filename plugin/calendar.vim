@@ -3,7 +3,7 @@
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 2013 Mar 19
-" Version: 2.7
+" Version: 2.8
 " Thanks:
 "     Tobias Columbus               : customizable key bindings
 "     Daniel P. Wright              : doc/calendar.txt
@@ -46,6 +46,7 @@
 "     Michael Geddes                : bug fix
 "     Leif Wickland                 : bug fix
 " ChangeLog:
+"     2.8  : bug fix
 "     2.7  : vim7ish, customizable key bindings
 "     2.6  : new week number format
 "     2.5  : bug fix, 7.2 don't have relativenumber.
@@ -215,7 +216,7 @@ endif
 command! -nargs=* Calendar  call calendar#show(0,<f-args>)
 command! -nargs=* CalendarH call calendar#show(1,<f-args>)
 
-if get(g:, 'calendar_no_mappings', 0)
+if !get(g:, 'calendar_no_mappings', 0)
   if !hasmapto('<Plug>CalendarV')
     nmap <unique> <Leader>cal <Plug>CalendarV
   endif
