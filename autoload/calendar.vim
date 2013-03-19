@@ -940,8 +940,6 @@ function! s:CalendarHelp()
   let max_width = max(map(values(ck), 'len(v:val)'))
   let offsets = map(copy(ck), '1 + max_width - len(v:val)')
 
-  echohl None
-  echo 'Calendar version ' . g:calendar_version
   echohl SpecialKey
   echo ck['goto_prev_month']  . repeat(' ', offsets['goto_prev_month']) . ': goto prev month'
   echo ck['goto_next_month']  . repeat(' ', offsets['goto_next_month']) . ': goto next month'
