@@ -206,7 +206,6 @@
 "     add the option for diary which is separate or single file.
 " GetLatestVimScripts: 52 1 :AutoInstall: calendar.vim
 
-let g:calendar_version = "2.7"
 if &compatible
   finish
 endif
