@@ -3,7 +3,7 @@
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
 " Last Change: 2013 Mar 19
-" Version: 2.8
+" Version: 2.9
 " Thanks:
 "     Tobias Columbus               : customizable key bindings
 "     Daniel P. Wright              : doc/calendar.txt
