@@ -665,10 +665,10 @@ function! calendar#show(...)
         else
           if g:calendar_weeknm <= 2
             let vdisplay2 = vdisplay2.'WK'.viweek
-		  elseif g:calendar_weeknm == 3 || g:calendar_weeknm == 4
-		    let vdisplay2 = vdisplay2.'KW'.viweek
-		  elseif g:calendar_weeknm == 5
-		    let vdisplay2 = vdisplay2.viweek
+          elseif g:calendar_weeknm == 3 || g:calendar_weeknm == 4
+            let vdisplay2 = vdisplay2.'KW'.viweek
+          elseif g:calendar_weeknm == 5
+            let vdisplay2 = vdisplay2.viweek
           endif
         endif
       endif
