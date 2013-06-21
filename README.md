@@ -39,6 +39,10 @@ window:
 
     :CalendarH
 
+Bring up a full-screen:
+
+    :CalendarT
+
 Fast mappings are provided:
 
 * <kbd>&lt;LocalLeader&gt;cal</kbd>: Vertically-split calendar
