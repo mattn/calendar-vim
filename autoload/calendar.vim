@@ -59,6 +59,14 @@ if exists("g:calendar_keys") && type(g:calendar_keys) == 4
 end
 
 "*****************************************************************
+"* CalendarClose : close the calendar
+"*----------------------------------------------------------------
+"*****************************************************************
+function! calendar#close(...)
+  bw!
+endfunction
+
+"*****************************************************************
 "* CalendarDoAction : call the action handler function
 "*----------------------------------------------------------------
 "*****************************************************************
@@ -1021,6 +1029,7 @@ endfunction
 "*****************************************************************
 function! s:CalendarBuildKeymap(dir, vyear, vmnth)
   " make keymap
+  nnoremap <silent> <buffer> <Plug>CalendarClose  :call calendar#close()<cr>
   nnoremap <silent> <buffer> <Plug>CalendarDoAction  :call calendar#action()<cr>
   nnoremap <silent> <buffer> <Plug>CalendarDoAction  :call calendar#action()<cr>
   nnoremap <silent> <buffer> <Plug>CalendarGotoToday :call calendar#show(b:CalendarDir)<cr>
@@ -1035,7 +1044,7 @@ function! s:CalendarBuildKeymap(dir, vyear, vmnth)
 
   nmap <buffer> <2-LeftMouse> <Plug>CalendarDoAction
 
-  execute 'nmap <buffer> ' . s:calendar_keys['close'] . ' <C-w>c'
+  execute 'nmap <buffer> ' . s:calendar_keys['close'] . ' <Plug>CalendarClose'
   execute 'nmap <buffer> ' . s:calendar_keys['do_action'] . ' <Plug>CalendarDoAction'
   execute 'nmap <buffer> ' . s:calendar_keys['goto_today'] . ' <Plug>CalendarGotoToday'
   execute 'nmap <buffer> ' . s:calendar_keys['show_help'] . ' <Plug>CalendarShowHelp'
