@@ -115,7 +115,11 @@ function! calendar#action(...)
     return
   endif
 
-  if b:CalendarDir
+  if b:CalendarDir == 0
+    let dir = 'V'
+    let cnr = 1
+    let week = ((col(".")+1) / 3) - 1
+  elseif b:CalendarDir == 1
     let dir = 'H'
     if exists('g:calendar_weeknm')
       let cnr = col('.') - (col('.')%(24+5)) + 1
@@ -123,8 +127,8 @@ function! calendar#action(...)
       let cnr = col('.') - (col('.')%(24)) + 1
     endif
     let week = ((col(".") - cnr - 1 + cnr/49) / 3)
-  else
-    let dir = 'V'
+  elseif b:CalendarDir == 2
+    let dir = 'T'
     let cnr = 1
     let week = ((col(".")+1) / 3) - 1
   endif
@@ -150,17 +154,23 @@ function! calendar#action(...)
     return
   endif
   let sline = substitute(strpart(getline(hdr),cnr,21),'\s*\(.*\)\s*','\1','')
-  if (col(".")-cnr) > 21
-    return
-  endif
+  if b:CalendarDir != 2
+    if (col(".")-cnr) > 21
+      return
+    endif
 
-  " extract day
-  if g:calendar_mark == 'right' && col('.') > 1
-    normal! h
-    let day = matchstr(expand("<cword>"), '[^0].*')
-    normal! l
+    " extract day
+    if g:calendar_mark == 'right' && col('.') > 1
+      normal! h
+      let day = matchstr(expand("<cword>"), '[^0].*')
+      normal! l
+    else
+      let day = matchstr(expand("<cword>"), '[^0].*')
+    endif
   else
-    let day = matchstr(expand("<cword>"), '[^0].*')
+    let c = col('.')
+    let day = matchstr(getline('.'), '^.*|\zs[^|]\{-}\%'.c.'c[^|]\{-}\ze|.*$')
+    let day = matchstr(day, '\d\+')
   endif
   if day == 0
     return
