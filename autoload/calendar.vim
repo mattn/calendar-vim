@@ -279,7 +279,8 @@ function! calendar#show(...)
       let h = h + 1
     endwhile
     let whitehrz = whitehrz.'|'
-    let vrt = (height - &cmdheight) / 5 - 4
+    let navifix = (exists('g:calendar_navi') && g:calendar_navi == 'both') * 2
+    let vrt = (height - &cmdheight - 3 - navifix) / 6 - 2
     if vrt < 0
       let vrt = 0
     endif
@@ -292,7 +293,7 @@ function! calendar#show(...)
     let leftmargin = (width - (strlen(whitehrz) + 3) * 7 - 1) / 2
     let whiteleft = ''
     while h < leftmargin
-      let whiteleft = ' '.whiteleft
+      let whiteleft = whiteleft.' '
       let h = h + 1
     endwhile
     let h = 0
