@@ -283,29 +283,39 @@ function! calendar#show(...)
     if vrt < 0
       let vrt = 0
     endif
-    let h = 0
     if whitehrz == '|'
       let whitevrt = whitehrz
     else
       let whitevrt = whitehrz[1:]
     endif
+    let h = 0
+    let leftmargin = (width - (strlen(whitehrz) + 3) * 7 - 1) / 2
+    let whiteleft = ''
+    while h < leftmargin
+      let whiteleft = ' '.whiteleft
+      let h = h + 1
+    endwhile
+    let h = 0
     while h < vrt
-      let whitevrt = whitevrt."\n"
+      let whitevrt = whitevrt."\n".whiteleft.'|'
       let i = 0
-      while i < 8
-        let whitevrt = whitevrt.whitehrz . '   '
+      while i < 7
+        let whitevrt = whitevrt.'   '.whitehrz
         let i = i + 1
       endwhile
       let h = h + 1
     endwhile
     let whitevrt = whitevrt."\n"
-    let whitevrt2 = substitute(whitehrz, '|', '+', 'g')
+    let whitevrt2 = whiteleft.'+'
     let h = 0
+    let borderhrz = '---'.substitute(substitute(whitehrz, ' ', '-', 'g'), '|', '+', '')
     while h < 7
-      let whitevrt2 = whitevrt2.'---'.substitute(substitute(whitehrz, ' ', '-', 'g'), '|', '+', '')
+      let whitevrt2 = whitevrt2.borderhrz
       let h = h + 1
     endwhile
     let whitevrt = whitevrt.whitevrt2."\n"
+    let fridaycol = (strlen(whitehrz) + 3) * 5 + strlen(whiteleft) + 1
+    let saturdaycol = (strlen(whitehrz) + 3) * 6 + strlen(whiteleft) + 1
   else
     let vmcntmax = 3
   endif
@@ -490,10 +500,7 @@ function! calendar#show(...)
     if dir == 2
       let whiteruler = substitute(substitute(whitehrz, ' ', '_', 'g'), '__', '  ', '')
       let vwruler = '| '.substitute(vwruler, ' ', whiteruler.' ', 'g').whiteruler
-      if whitehrz != '|'
-        let vdisplay2 = vdisplay2.' '
-      endif
-      let vdisplay2 = vdisplay2.substitute(substitute(whitehrz, ' ', '', ''), '|', '', '').vwruler."\n"
+      let vdisplay2 = vdisplay2.whiteleft.vwruler."\n"
     else
       let vdisplay2 = vdisplay2.' '.vwruler."\n"
     endif
@@ -505,7 +512,11 @@ function! calendar#show(...)
     let vinpcur = 0
     while (vinpcur < vnweek)
       if dir == 2
-        let vdisplay2 = vdisplay2.whitehrz
+        if vinpcur % 7
+          let vdisplay2 = vdisplay2.whitehrz
+        else
+          let vdisplay2 = vdisplay2.whiteleft.'|'
+        endif
       endif
       let vdisplay2 = vdisplay2.'   '
       let vinpcur = vinpcur + 1
@@ -513,7 +524,11 @@ function! calendar#show(...)
     let vdaycur = 1
     while (vdaycur <= vmdays)
       if dir == 2
-        let vdisplay2 = vdisplay2.whitehrz
+        if vinpcur % 7
+          let vdisplay2 = vdisplay2.whitehrz
+        else
+          let vdisplay2 = vdisplay2.whiteleft.'|'
+        endif
       endif
       if vmnth < 10
          let vtarget = vyear."0".vmnth
@@ -854,7 +869,7 @@ function! calendar#show(...)
     elseif dir == 0
       let navcol = (vcolumn-strlen(navi_label)+2)/2
     else
-      let navcol = ((strlen(whitehrz) + 3) * 9 - strlen(navi_label) - 6) / 2
+      let navcol = (width - strlen(navi_label)) / 2
     endif
     if navcol < 3
       let navcol = 3
@@ -927,8 +942,8 @@ function! calendar#show(...)
       syn match CalSaturday display /^.\{15}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /^.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
     else
-      exec printf('syn match CalSaturday display /^.\{%d}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL', (strlen(whitehrz) + 3) * 6 - 3)
-      exec printf('syn match Calsunday display /^.\{%d}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL', (strlen(whitehrz) + 3) * 7 - 3)
+      exec printf('syn match CalSaturday display /^.\{%d}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL', fridaycol)
+      exec printf('syn match CalSunday display /^.\{%d}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL', saturdaycol)
     endif
   else
     if dir == 1
@@ -938,7 +953,7 @@ function! calendar#show(...)
       syn match CalSaturday display /^.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /^\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
     else
-      exec printf('syn match CalSaturday display /^.\{%d}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL', (strlen(whitehrz) + 3) * 7 - 3)
+      exec printf('syn match CalSaturday display /^.\{%d}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL', saturdaycol)
       syn match CalSunday display /^\s*|\s*\([0-9\ ]\d\)/hs=e-1 contains=ALL
     endif
   endif
@@ -959,8 +974,8 @@ function! calendar#show(...)
 
   " --+--
   if dir == 2
-    exec "syn match CalNormal display " string(substitute(whitehrz, '|', '+', ''))
-    exec "syn match CalNormal display " string(substitute(substitute(whitehrz, '|', '+', ''), ' ', '-', 'g'))
+    exec "syn match CalNormal display " string(borderhrz)
+    exec "syn match CalNormal display " string('^'.whiteleft.'+')
   endif
 
   return ''
