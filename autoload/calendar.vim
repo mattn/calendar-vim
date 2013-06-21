@@ -169,8 +169,15 @@ function! calendar#action(...)
     endif
   else
     let c = col('.')
-    let day = matchstr(getline('.'), '^.*|\zs[^|]\{-}\%'.c.'c[^|]\{-}\ze|.*$')
-    let day = matchstr(day, '\d\+')
+    let day = ''
+    let lnum = line('.')
+    let cursorchar = getline(lnum)[col('.') - 1]
+    while day == '' && lnum > 2 && cursorchar != '-' && cursorchar != '+'
+      let day = matchstr(getline(lnum), '^.*|\zs[^|]\{-}\%'.c.'c[^|]\{-}\ze|.*$')
+      let day = matchstr(day, '\d\+')
+      let lnum = lnum - 1
+      let cursorchar = getline(lnum)[col('.') - 1]
+    endwhile
   endif
   if day == 0
     return
