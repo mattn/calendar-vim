@@ -214,6 +214,7 @@ endif
 "*****************************************************************
 command! -nargs=* Calendar  call calendar#show(0,<f-args>)
 command! -nargs=* CalendarH call calendar#show(1,<f-args>)
+command! -nargs=* CalendarT call calendar#show(2,<f-args>)
 
 if !get(g:, 'calendar_no_mappings', 0)
   if !hasmapto('<Plug>CalendarV')
@@ -225,5 +226,6 @@ if !get(g:, 'calendar_no_mappings', 0)
 endif
 nnoremap <silent> <Plug>CalendarV :cal calendar#show(0)<CR>
 nnoremap <silent> <Plug>CalendarH :cal calendar#show(1)<CR>
+nnoremap <silent> <Plug>CalendarT :cal calendar#show(2)<CR>
 
 " vi: et sw=2 ts=2

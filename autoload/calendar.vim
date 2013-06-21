@@ -214,11 +214,13 @@ function! calendar#show(...)
   let vmnth_org = vmnth
   let vyear_org = vyear
 
-  " start with last month
-  let vmnth = vmnth - 1
-  if vmnth < 1
-    let vmnth = 12
-    let vyear = vyear - 1
+  if dir != 2
+    " start with last month
+    let vmnth = vmnth - 1
+    if vmnth < 1
+      let vmnth = 12
+      let vyear = vyear - 1
+    endif
   endif
 
   " reset display variables
@@ -232,7 +234,50 @@ function! calendar#show(...)
   if exists("g:calendar_begin")
     exe "call " . g:calendar_begin . "()"
   endif
-  while vmcnt < 3
+  if dir == 2
+    let vmcntmax = 1
+    let whitehrz = ''
+    let hrz = winwidth(0) / 8 - 5
+    if hrz < 0
+      let hrz = 0
+    endif
+    let h = 0
+    while h < hrz
+      let whitehrz = whitehrz.' '
+      let h = h + 1
+    endwhile
+    let whitehrz = whitehrz.'|'
+    let vrt = winheight(0) / 5 - 4
+    if vrt < 0
+      let vrt = 0
+    endif
+    let h = 0
+    if whitehrz == '|'
+      let whitevrt = whitehrz
+    else
+      let whitevrt = whitehrz[1:]
+    endif
+    while h < vrt
+      let whitevrt = whitevrt."\n"
+      let i = 0
+      while i < 8
+        let whitevrt = whitevrt.whitehrz . '   '
+        let i = i + 1
+      endwhile
+      let h = h + 1
+    endwhile
+    let whitevrt = whitevrt."\n"
+    let whitevrt2 = substitute(whitehrz, '|', '+', 'g')
+    let h = 0
+    while h < 7
+      let whitevrt2 = whitevrt2.'---'.substitute(substitute(whitehrz, ' ', '-', 'g'), '|', '+', '')
+      let h = h + 1
+    endwhile
+    let whitevrt = whitevrt.whitevrt2."\n"
+  else
+    let vmcntmax = 3
+  endif
+  while vmcnt < vmcntmax
     let vcolumn = 22
     let vnweek = -1
     "--------------------------------------------------------------
@@ -410,19 +455,34 @@ function! calendar#show(...)
     if exists('g:calendar_monday')
       let vwruler = strpart(vwruler,stridx(vwruler, ' ') + 1).' '.strpart(vwruler,0,stridx(vwruler, ' '))
     endif
-    let vdisplay2 = vdisplay2.' '.vwruler."\n"
-    if g:calendar_mark == 'right'
+    if dir == 2
+      let whiteruler = substitute(substitute(whitehrz, ' ', '_', 'g'), '__', '  ', '')
+      let vwruler = '| '.substitute(vwruler, ' ', whiteruler.' ', 'g').whiteruler
+      if whitehrz != '|'
+        let vdisplay2 = vdisplay2.' '
+      endif
+      let vdisplay2 = vdisplay2.substitute(substitute(whitehrz, ' ', '', ''), '|', '', '').vwruler."\n"
+    else
+      let vdisplay2 = vdisplay2.' '.vwruler."\n"
+    endif
+    if g:calendar_mark == 'right' && dir != 2
       let vdisplay2 = vdisplay2.' '
     endif
 
     " build calendar
     let vinpcur = 0
     while (vinpcur < vnweek)
+      if dir == 2
+        let vdisplay2 = vdisplay2.whitehrz
+      endif
       let vdisplay2 = vdisplay2.'   '
       let vinpcur = vinpcur + 1
     endwhile
     let vdaycur = 1
     while (vdaycur <= vmdays)
+      if dir == 2
+        let vdisplay2 = vdisplay2.whitehrz
+      endif
       if vmnth < 10
          let vtarget = vyear."0".vmnth
       else
@@ -482,6 +542,9 @@ function! calendar#show(...)
       let vinpcur = vinpcur + 1
       if vinpcur % 7 == 0
         if exists('g:calendar_weeknm')
+          if dir == 2
+            let vdisplay2 = vdisplay2.whitehrz
+          endif
           if g:calendar_mark != 'right'
             let vdisplay2 = vdisplay2.' '
           endif
@@ -515,7 +578,7 @@ function! calendar#show(...)
 
         endif
         let vdisplay2 = vdisplay2."\n"
-        if g:calendar_mark == 'right'
+        if g:calendar_mark == 'right' && dir != 2
           let vdisplay2 = vdisplay2.' '
         endif
       endif
@@ -524,10 +587,16 @@ function! calendar#show(...)
     " if it is needed, fill with space
     if vinpcur % 7
       while (vinpcur % 7 != 0)
+        if dir == 2
+          let vdisplay2 = vdisplay2.whitehrz
+        endif
         let vdisplay2 = vdisplay2.'   '
         let vinpcur = vinpcur + 1
       endwhile
       if exists('g:calendar_weeknm')
+        if dir == 2
+          let vdisplay2 = vdisplay2.whitehrz
+        endif
         if g:calendar_mark != 'right'
           let vdisplay2 = vdisplay2.' '
         endif
@@ -557,7 +626,7 @@ function! calendar#show(...)
 
     " build display
     let vstrline = ''
-    if dir
+    if dir == 1
       " for horizontal
       "--------------------------------------------------------------
       " +---+   +---+   +------+
@@ -585,7 +654,7 @@ function! calendar#show(...)
       endwhile
       let vdisplay1 = vstrline
       let vheight = vtokline-1
-    else
+    elseif dir == 0
       " for virtical
       "--------------------------------------------------------------
       " +---+   +---+   +---+
@@ -622,6 +691,35 @@ function! calendar#show(...)
         let vheight = vtokline + 1
       endwhile
       let vdisplay1 = vstrline
+    else
+      let vtokline = 1
+      while 1
+        let vtoken1 = get(split(vdisplay1, "\n"), vtokline-1, '')
+        let vtoken2 = get(split(vdisplay2, "\n"), vtokline-1, '')
+        if vtoken1 == '' && vtoken2 == ''
+          break
+        endif
+        while strlen(vtoken1) < (vcolumn+1)*vmcnt
+          if strlen(vtoken1) % (vcolumn+1) == 0
+            let vtoken1 = vtoken1.'|'
+          else
+            let vtoken1 = vtoken1.' '
+          endif
+        endwhile
+        if vtokline > 2
+          if whitehrz == '|'
+            let vright = whitevrt
+          else
+            let vright = ' '.whitevrt
+          endif
+        else
+          let vright = "\n"
+        endif
+        let vstrline = vstrline.vtoken1.vtoken2.vright
+        let vtokline = vtokline + 1
+      endwhile
+      let vdisplay1 = vstrline
+      let vheight = vtokline-1
     endif
     let vmnth = vmnth + 1
     let vmcnt = vmcnt + 1
@@ -672,12 +770,16 @@ function! calendar#show(...)
     endif
 
     " or not
-    if dir
+    if dir == 1
       silent execute 'bo '.vheight.'split __Calendar'
       setlocal winfixheight
-    else
+    elseif dir == 0
       silent execute 'to '.vcolumn.'vsplit __Calendar'
       setlocal winfixwidth
+    elseif bufname('.') == '' && &l:modified == 0
+      silent execute 'edit __Calendar'
+    else
+      silent execute 'tabnew __Calendar'
     endif
     call s:CalendarBuildKeymap(dir, vyear, vmnth)
     setlocal noswapfile
@@ -713,10 +815,12 @@ function! calendar#show(...)
         \.get(split(g:calendar_navi_label, ','), 0, '').' '
         \.get(split(g:calendar_navi_label, ','), 1, '').' '
         \.get(split(g:calendar_navi_label, ','), 2, '').'>'
-    if dir
+    if dir == 1
       let navcol = vcolumn + (vcolumn-strlen(navi_label)+2)/2
-    else
+    elseif dir == 0
       let navcol = (vcolumn-strlen(navi_label)+2)/2
+    else
+      let navcol = ((strlen(whitehrz) + 3) * 9 - strlen(navi_label) - 6) / 2
     endif
     if navcol < 3
       let navcol = 3
@@ -782,20 +886,26 @@ function! calendar#show(...)
   " saturday, sunday
 
   if exists('g:calendar_monday')
-    if dir
+    if dir == 1
       syn match CalSaturday display /|.\{15}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /|.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
-    else
+    elseif dir == 0
       syn match CalSaturday display /^.\{15}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /^.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
+    else
+      exec printf('syn match CalSaturday display /^.\{%d}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL', (strlen(whitehrz) + 3) * 6 - 3)
+      exec printf('syn match Calsunday display /^.\{%d}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL', (strlen(whitehrz) + 3) * 7 - 3)
     endif
   else
-    if dir
+    if dir == 1
       syn match CalSaturday display /|.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /|\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
-    else
+    elseif dir == 0
       syn match CalSaturday display /^.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /^\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
+    else
+      exec printf('syn match CalSaturday display /^.\{%d}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL', (strlen(whitehrz) + 3) * 7 - 3)
+      syn match CalSunday display /^\s*|\s*\([0-9\ ]\d\)/hs=e-1 contains=ALL
     endif
   endif
 
@@ -811,6 +921,12 @@ function! calendar#show(...)
 
   if search("\*","w") > 0
     silent execute "normal! gg/\*\<cr>"
+  endif
+
+  " --+--
+  if dir == 2
+    exec "syn match CalNormal display " string(substitute(whitehrz, '|', '+', ''))
+    exec "syn match CalNormal display " string(substitute(substitute(whitehrz, '|', '+', ''), ' ', '-', 'g'))
   endif
 
   return ''
@@ -986,3 +1102,4 @@ hi def link CalWeeknm   Comment
 hi def link CalToday    Directory
 hi def link CalHeader   Special
 hi def link CalMemo     Identifier
+hi def link CalNormal   Normal
