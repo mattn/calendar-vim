@@ -801,7 +801,7 @@ function! calendar#show(...)
     elseif dir == 0
       silent execute 'to '.vcolumn.'vsplit __Calendar'
       setlocal winfixwidth
-    elseif bufname('.') == '' && &l:modified == 0
+    elseif bufname('%') == '' && &l:modified == 0
       silent execute 'edit __Calendar'
     else
       silent execute 'tabnew __Calendar'
