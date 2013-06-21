@@ -947,8 +947,8 @@ function! calendar#show(...)
       syn match CalSaturday display /^.\{15}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /^.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
     else
-      exec printf('syn match CalSaturday display /^.\{%d}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL', fridaycol)
-      exec printf('syn match CalSunday display /^.\{%d}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL', saturdaycol)
+      exec printf('syn match CalSaturday display /^.\{%d}\s\?\([0-9\ ]\d\)/hs=e-1 contains=ALL', fridaycol)
+      exec printf('syn match CalSunday display /^.\{%d}\s\?\([0-9\ ]\d\)/hs=e-1 contains=ALL', saturdaycol)
     endif
   else
     if dir == 1
@@ -958,7 +958,7 @@ function! calendar#show(...)
       syn match CalSaturday display /^.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /^\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
     else
-      exec printf('syn match CalSaturday display /^.\{%d}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL', saturdaycol)
+      exec printf('syn match CalSaturday display /^.\{%d}\s\?\([0-9\ ]\d\)/hs=e-1 contains=ALL', saturdaycol)
       syn match CalSunday display /^\s*|\s*\([0-9\ ]\d\)/hs=e-1 contains=ALL
     endif
   endif
