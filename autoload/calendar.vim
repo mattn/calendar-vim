@@ -832,7 +832,9 @@ function! calendar#show(...)
     let b:Calendar = 'Calendar'
     setlocal filetype=calendar
     " is this a vertical (0) or a horizontal (1) split?
-    exe vcolumn + nontext_columns . "wincmd |"
+    if dir != 2
+      exe vcolumn + nontext_columns . "wincmd |"
+    endif
   endif
   if g:calendar_datetime == "statusline"
     setlocal statusline=%{strftime('%c')}
