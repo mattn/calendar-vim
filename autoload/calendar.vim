@@ -262,7 +262,7 @@ function! calendar#show(...)
   if dir == 2
     let vmcntmax = 1
     let whitehrz = ''
-    let hrz = winwidth(0) / 8 - 5
+    let hrz = &columns / 8 - 5
     if hrz < 0
       let hrz = 0
     endif
@@ -272,7 +272,7 @@ function! calendar#show(...)
       let h = h + 1
     endwhile
     let whitehrz = whitehrz.'|'
-    let vrt = winheight(0) / 5 - 4
+    let vrt = (&lines - &cmdheight) / 5 - 4
     if vrt < 0
       let vrt = 0
     endif
