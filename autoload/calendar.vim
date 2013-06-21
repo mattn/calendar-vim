@@ -285,9 +285,9 @@ function! calendar#show(...)
       let vrt = 0
     endif
     if whitehrz == '|'
-      let whitevrt = whitehrz
+      let whitevrta = whitehrz
     else
-      let whitevrt = whitehrz[1:]
+      let whitevrta = whitehrz[1:]
     endif
     let h = 0
     let leftmargin = (width - (strlen(whitehrz) + 3) * 7 - 1) / 2
@@ -297,6 +297,7 @@ function! calendar#show(...)
       let h = h + 1
     endwhile
     let h = 0
+    let whitevrt = ''
     while h < vrt
       let whitevrt = whitevrt."\n".whiteleft.'|'
       let i = 0
@@ -314,7 +315,8 @@ function! calendar#show(...)
       let whitevrt2 = whitevrt2.borderhrz
       let h = h + 1
     endwhile
-    let whitevrt = whitevrt.whitevrt2."\n"
+    let whitevrtweeknm = whitevrt.whitevrt2."\n"
+    let whitevrt = whitevrta.whitevrt.whitevrt2."\n"
     let fridaycol = (strlen(whitehrz) + 3) * 5 + strlen(whiteleft) + 1
     let saturdaycol = (strlen(whitehrz) + 3) * 6 + strlen(whiteleft) + 1
   else
@@ -755,7 +757,9 @@ function! calendar#show(...)
           endif
         endwhile
         if vtokline > 2
-          if whitehrz == '|'
+          if exists('g:calendar_weeknm')
+            let vright = whitevrtweeknm
+          elseif whitehrz == '|'
             let vright = whitevrt
           else
             let vright = ' '.whitevrt
