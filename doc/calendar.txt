@@ -64,8 +64,8 @@ respective value for this key and the default binding are listed below.
 'redisplay'                 Redraws calendar window.            'r'
 'goto_next_month'           Jumps to the next month.            '<Right>'
 'goto_prev_month'           Jumps to the previous month.        '<Left>'
-'goto_next_year'            Jumps to the next month.            '<Up>'
-'goto_prev_year'            Jumps to the previous month.        '<Down>'
+'goto_next_year'            Jumps to the next year.             '<Up>'
+'goto_prev_year'            Jumps to the previous year.         '<Down>'
 An example in your .vimrc might look like this: >
   let g:calendar_keys = { 'goto_next_month':'<C-Right>, 'goto_prev_month':'<C-Left>'}
 <
