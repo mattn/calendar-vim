@@ -273,7 +273,7 @@ function! calendar#show(...)
     let whitehrz = ''
     if !exists('b:CalendarDir') && !(bufname('%') == '' && &l:modified == 0)
       let width = &columns
-      let height = &lines
+      let height = &lines - 2
     else
       let width = winwidth(0)
       let height = winheight(0)
