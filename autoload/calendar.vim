@@ -75,6 +75,7 @@ function! calendar#action(...)
   if exists('g:calendar_navi')
     let navi = (a:0 > 0)? a:1 : expand("<cWORD>")
     let curl = line(".")
+    let curp = getpos(".")
     if navi == '<' . get(split(g:calendar_navi_label, ','), 0, '')
       if b:CalendarMonth > 1
         call calendar#show(b:CalendarDir, b:CalendarYear, b:CalendarMonth-1)
@@ -92,6 +93,14 @@ function! calendar#action(...)
       if exists('g:calendar_today')
         exe "call " . g:calendar_today . "()"
       endif
+    elseif navi == 'NextYear'
+      call calendar#show(b:CalendarDir, b:CalendarYear + 1, b:CalendarMonth)
+      call setpos('.', curp)
+      return
+    elseif navi == 'PrevYear'
+      call calendar#show(b:CalendarDir, b:CalendarYear - 1, b:CalendarMonth)
+      call setpos('.', curp)
+      return
     else
       let navi = ''
     endif
@@ -1085,8 +1094,8 @@ function! s:CalendarBuildKeymap(dir, vyear, vmnth)
   let nnav = get(split(g:calendar_navi_label, ','), 2, '')
   execute 'nnoremap <silent> <buffer> <Plug>CalendarGotoPrevMonth :call calendar#action("<' . pnav . '")<cr>'
   execute 'nnoremap <silent> <buffer> <Plug>CalendarGotoNextMonth :call calendar#action("' . nnav . '>")<cr>'
-  execute 'nnoremap <silent> <buffer> <Plug>CalendarGotoPrevYear  :call calendar#show('.a:dir.','.(a:vyear-1).','.a:vmnth.')<cr>'
-  execute 'nnoremap <silent> <buffer> <Plug>CalendarGotoNextYear  :call calendar#show('.a:dir.','.(a:vyear+1).','.a:vmnth.')<cr>'
+  execute 'nnoremap <silent> <buffer> <Plug>CalendarGotoPrevYear  :call calendar#action("PrevYear")<cr>'
+  execute 'nnoremap <silent> <buffer> <Plug>CalendarGotoNextYear  :call calendar#action("NextYear")<cr>'
 
   nmap <buffer> <2-LeftMouse> <Plug>CalendarDoAction
 
