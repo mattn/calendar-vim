@@ -10,7 +10,8 @@ Installation
 ------------
 
 You can install `calendar.vim` in the usual way, by copying the contents of the
-`plugin` and `doc` directories into the equivalent directories inside `.vim`.
+`plugin`, `autoload` and `doc` directories into the equivalent directories
+inside `.vim`.
 
 Alternatively, if you manage your plugins using [pathogen.vim][1], you can
 simply clone into the `bundle` directory:
