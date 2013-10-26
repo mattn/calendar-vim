@@ -32,6 +32,13 @@ calendar.vim makes the following commands available:
                           year.  When both [year] and [month] are omitted, the
                           calendar will show the current month.
 
+                                                *calendar-:CalendarVR* 
+:CalendarVR [[year] month]  Show calendar at this year and this month in a
+                          vertical split at the right site.  When [year] is
+                          omitted, the calendar will show the given month in
+                          the current year.  When both [year] and [month] are
+                          omitted, the calendar will show the current month.
+
 MAPPINGS                                        *calendar-mappings*
 
 calendar.vim makes the following normal mode mappings available:

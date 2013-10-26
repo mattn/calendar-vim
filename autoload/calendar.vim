@@ -713,8 +713,8 @@ function! calendar#show(...)
       endwhile
       let vdisplay1 = vstrline
       let vheight = vtokline-1
-    elseif dir == 0
-      " for virtical
+    elseif (dir == 0 || dir == 3)
+      " for vertical
       "--------------------------------------------------------------
       " +---+   +---+   +---+
       " | 1 | + | 2 | = |   |
@@ -837,6 +837,9 @@ function! calendar#show(...)
     elseif dir == 0
       silent execute 'to '.vcolumn.'vsplit __Calendar'
       setlocal winfixwidth
+    elseif dir == 3
+      silent execute 'bo '.vcolumn.'vsplit __Calendar'
+      setlocal winfixwidth
     elseif bufname('%') == '' && &l:modified == 0
       silent execute 'edit __Calendar'
     else
@@ -880,7 +883,7 @@ function! calendar#show(...)
         \.get(split(g:calendar_navi_label, ','), 2, '').'>'
     if dir == 1
       let navcol = vcolumn + (vcolumn-strlen(navi_label)+2)/2
-    elseif dir == 0
+    elseif (dir == 0 ||dir == 3)
       let navcol = (vcolumn-strlen(navi_label)+2)/2
     else
       let navcol = (width - strlen(navi_label)) / 2
@@ -952,7 +955,7 @@ function! calendar#show(...)
     if dir == 1
       syn match CalSaturday display /|.\{15}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /|.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
-    elseif dir == 0
+    elseif (dir == 0|| dir == 3)
       syn match CalSaturday display /^.\{15}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /^.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
     else
@@ -963,7 +966,7 @@ function! calendar#show(...)
     if dir == 1
       syn match CalSaturday display /|.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /|\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
-    elseif dir == 0
+    elseif (dir == 0 || dir == 3)
       syn match CalSaturday display /^.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /^\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
     else
