@@ -1063,7 +1063,7 @@ endfunc
 "*   year  : year of sign
 "*****************************************************************
 function! calendar#sign(day, month, year)
-  let sfile = g:calendar_diary."/".a:year."/".a:month."/".a:day.".md"
+  let sfile = g:calendar_diary."/".printf("%04d", a:year)."/".printf("%02d", a:month)."/".printf("%02d", a:day).".md"
   return filereadable(expand(sfile))
 endfunction
 
