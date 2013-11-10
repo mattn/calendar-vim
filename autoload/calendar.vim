@@ -124,7 +124,7 @@ function! calendar#action(...)
     return
   endif
 
-  if b:CalendarDir == 0
+  if b:CalendarDir == 0 || b:CalendarDir == 3
     let dir = 'V'
     let cnr = 1
     let week = ((col(".")+1) / 3) - 1
