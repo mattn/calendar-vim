@@ -2,7 +2,7 @@
 " What Is This: Calendar
 " File: calendar.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 2013 Mar 19
+" Last Change: 2013 Okt 27
 " Version: 2.9
 " Thanks:
 "     Tobias Columbus               : customizable key bindings
@@ -213,6 +213,7 @@ endif
 "* Calendar commands
 "*****************************************************************
 command! -nargs=* Calendar  call calendar#show(0,<f-args>)
+command! -nargs=* CalendarVR  call calendar#show(3,<f-args>)
 command! -nargs=* CalendarH call calendar#show(1,<f-args>)
 command! -nargs=* CalendarT call calendar#show(2,<f-args>)
 
