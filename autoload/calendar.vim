@@ -1052,6 +1052,7 @@ function! calendar#diary(day, month, year, week, dir)
   " load the file
   exe "wincmd w"
   exe "edit  " . sfile
+  setfiletype markdown
   let dir = getbufvar(vbufnr, "CalendarDir")
   let vyear = getbufvar(vbufnr, "CalendarYear")
   let vmnth = getbufvar(vbufnr, "CalendarMonth")
