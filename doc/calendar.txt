@@ -32,7 +32,7 @@ calendar.vim makes the following commands available:
                           year.  When both [year] and [month] are omitted, the
                           calendar will show the current month.
 
-                                                *calendar-:CalendarVR* 
+                                                *calendar-:CalendarVR*
 :CalendarVR [[year] month]  Show calendar at this year and this month in a
                           vertical split at the right site.  When [year] is
                           omitted, the calendar will show the given month in
@@ -195,6 +195,19 @@ presses 'today'.  Implement and set your function as follows: >
   endfunction
   let calendar_today = 'MyCalToday'
 <
+
+VARIABLES                                       *calendar-variables*
+
+
+g:unite_source_history_yank_file
+    Specify the directory for the diary files.
+
+    The default value is $HOME/diary
+
+    Example:
+
+    let g:calendar_diary=$HOME.'/.vim/diary'
+
 
 ABOUT                                           *calendar-about*
 
