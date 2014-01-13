@@ -83,6 +83,11 @@ Place a '*' or '+' mark after the day.  Acceptable values are 'left',
   let g:calendar_mark = 'right'
 <
 
+                                                *g:calendar_diary*
+Specify the directory for the diary files.  The default value is $HOME/diary.
+  let g:calendar_diary=$HOME.'/.vim/diary'
+
+
                                                 *g:calendar_navi*
 To control the calendar navigator, set this variable.  Acceptable values are
 'top', 'bottom', or 'both'. >
