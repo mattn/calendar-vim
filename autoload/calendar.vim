@@ -38,6 +38,9 @@ if !exists("g:calendar_options")
     let g:calendar_options .= " nornu"
   endif
 endif
+if !exists("g:calendar_filetype")
+  let g:calendar_filetype = "markdown"
+endif
 
 "*****************************************************************
 "* Default Calendar key bindings
@@ -1052,7 +1055,7 @@ function! calendar#diary(day, month, year, week, dir)
   " load the file
   exe "wincmd w"
   exe "edit  " . sfile
-  setfiletype markdown
+  exe "setfiletype " . g:calendar_filetype
   let dir = getbufvar(vbufnr, "CalendarDir")
   let vyear = getbufvar(vbufnr, "CalendarYear")
   let vmnth = getbufvar(vbufnr, "CalendarMonth")
