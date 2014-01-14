@@ -138,9 +138,9 @@ Acceptable values are 'title', 'statusline', and '': >
   let g:calendar_datetime = 'title'
 <
                                                 *g:calendar_filetype*
-To control the filetype of calendar entries, set this variable. Acceptable
-values are values that are acceptable for |filetype| like e.g. 'markdown' or
-'pandoc':
+To control the filetype of calendar entries, set this variable. It defaults to
+'markdown'. Acceptable values are values that are acceptable for |filetype|
+like e.g. 'markdown' or 'pandoc':
   let g:calendar_filetype = 'pandoc'
 
 
