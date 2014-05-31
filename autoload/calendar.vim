@@ -821,7 +821,7 @@ function! calendar#show(...)
     " make title
     if g:calendar_datetime == "title" && (!exists('s:bufautocommandsset'))
       auto BufEnter *Calendar let b:sav_titlestring = &titlestring | let &titlestring = '%{strftime("%c")}'
-      auto BufLeave *Calendar let &titlestring = b:sav_titlestring
+      auto BufLeave *Calendar if exists('b:sav_titlestring') | let &titlestring = b:sav_titlestring | endif
       let s:bufautocommandsset = 1
     endif
 
