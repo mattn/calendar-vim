@@ -110,7 +110,7 @@ example, to use the current Japanese era (Heisei), you would set: >
                                                 *g:calendar_mruler*
 To change the month names for the calendar headings, set this variable.  The
 value is expected to be a comma-separated list of twelve values, starting with
-Janurary: >
+January: >
   let g:calendar_mruler = 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec'
 <
 
