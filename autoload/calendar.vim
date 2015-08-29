@@ -1051,7 +1051,7 @@ function! calendar#diary(day, month, year, week, dir)
       return
     endif
   endif
-  let sfile = expand(sfile) . "/" . printf("%02d", a:day) . expand(g:calendar_diary_extension)
+  let sfile = expand(sfile) . "/" . printf("%02d", a:day) . g:calendar_diary_extension
   let sfile = substitute(sfile, ' ', '\\ ', 'g')
   let vbufnr = bufnr('__Calendar')
 
