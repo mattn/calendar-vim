@@ -41,6 +41,9 @@ endif
 if !exists("g:calendar_filetype")
   let g:calendar_filetype = "markdown"
 endif
+if !exists("g:calendar_diary_extension")
+    let g:calendar_diary_extension = ".md"
+endif
 
 "*****************************************************************
 "* Default Calendar key bindings
@@ -1048,7 +1051,7 @@ function! calendar#diary(day, month, year, week, dir)
       return
     endif
   endif
-  let sfile = expand(sfile) . "/" . printf("%02d", a:day) . ".md"
+  let sfile = expand(sfile) . "/" . printf("%02d", a:day) . g:calendar_diary_extension
   let sfile = substitute(sfile, ' ', '\\ ', 'g')
   let vbufnr = bufnr('__Calendar')
 
