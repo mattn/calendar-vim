@@ -148,6 +148,11 @@ To control the filetype of calendar entries, set this variable. It defaults to
 like e.g. 'markdown' or 'pandoc':
   let g:calendar_filetype = 'pandoc'
 
+                                                *g:calendar_number_of_months*
+To control the number of months per view, set this variable. The default value
+is 3. >
+  let g:calendar_number_of_months = 5
+<
 
 HOOKS                                           *calendar-hooks*
 

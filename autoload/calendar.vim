@@ -335,7 +335,7 @@ function! calendar#show(...)
     let fridaycol = (strlen(whitehrz) + 3) * 5 + strlen(whiteleft) + 1
     let saturdaycol = (strlen(whitehrz) + 3) * 6 + strlen(whiteleft) + 1
   else
-    let vmcntmax = 3
+    let vmcntmax = get(g:, 'calendar_number_of_months', 3)
   endif
   while vmcnt < vmcntmax
     let vcolumn = 22
