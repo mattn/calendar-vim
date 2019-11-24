@@ -396,7 +396,9 @@ function! calendar#show(...)
       echo 'Invalid Year or Month'
       return
     endif
+    let vleap = 0
     if vyear % 400 == 0
+      let vleap = 1
       if vmnth == 2
         let vmdays = 29
       elseif vmnth >= 3
@@ -407,6 +409,7 @@ function! calendar#show(...)
         let vmdays = 28
       endif
     elseif vyear % 4 == 0
+      let vleap = 1
       if vmnth == 2
         let vmdays = 29
       elseif vmnth >= 3
@@ -418,10 +421,8 @@ function! calendar#show(...)
     if vnweek == -1
       let vnweek = ( vyear * 365 ) + vparam
       let vnweek = vnweek + ( vyear/4 ) - ( vyear/100 ) + ( vyear/400 )
-      if vyear % 4 == 0
-        if vyear % 100 != 0 || vyear % 400 == 0
-          let vnweek = vnweek - 1
-        endif
+      if vleap
+        let vnweek = vnweek - 1
       endif
       let vnweek = vnweek - 1
     endif
@@ -449,9 +450,9 @@ function! calendar#show(...)
       "viweek <= number of week
       "vfweek <= 1. day of year
 
-      " mo di mi do fr sa so
-      " 6  5  4  3  2  1  0  vfweek
-      " 0  1  2  3  4  5  6  vnweek
+      " Mon Tue Wed Thu Fri Sat Sun
+      " 6   5   4   3   2   1   0  vfweek
+      " 0   1   2   3   4   5   6  vnweek
 
       let vfweek =((vparam % 7)  -vnweek+ 14-2) % 7
       let viweek = (vparam - vfweek-2+7 ) / 7 +1
@@ -462,14 +463,16 @@ function! calendar#show(...)
 
       "vfweekl  <=year length
       let vfweekl = 52
-      if (vfweek == 3)
+      if vfweek == 3 || (vfweek == 4 && vleap)
         let vfweekl = 53
       endif
 
       if viweek == 0
+        "belongs to last week number of previous year
         let viweek = 52
-        if ((vfweek == 2) && (((vyear-1) % 4) != 0))
-              \ || ((vfweek == 1) && (((vyear-1) % 4) == 0))
+        let vleap = ((vyear-1) % 4 == 0 &&
+              \ ((vyear-1) % 100 != 0 || (vyear-1) % 400 == 0))
+        if vfweek == 2 || (vfweek == 1 && vleap)
           let viweek = 53
         endif
       endif
