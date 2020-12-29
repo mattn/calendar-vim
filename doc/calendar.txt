@@ -55,6 +55,10 @@ SETTINGS                                        *calendar-settings*
 
 calendar.vim can be configured using the following settings:
 
+                                                *g:calendar_no_mappings*
+Disable standard mappings:
+  let g:calendar_no_mappings=0
+
                                                 *g:calendar_focus_today*
 Keeps focus when moving to next or previous calendar: >
   let g:calendar_focus_today = 1
