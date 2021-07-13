@@ -44,6 +44,9 @@ endif
 if !exists("g:calendar_diary_extension")
     let g:calendar_diary_extension = ".md"
 endif
+if !exists("g:calendar_diary_flat_structure")
+  let g:calendar_diary_flat_structure = 0
+endif
 
 "*****************************************************************
 "* Default Calendar key bindings
@@ -1042,19 +1045,27 @@ function! calendar#diary(day, month, year, week, dir)
     call confirm("please create diary directory : ".g:calendar_diary, 'OK')
     return
   endif
-  let sfile = expand(g:calendar_diary) . "/" . printf("%04d", a:year)
-  if isdirectory(sfile) == 0
-    if s:make_dir(sfile) != 0
-      return
+  if g:calendar_diary_flat_structure
+      " diary files organized in flat folder structure
+      " dir/yyyy-mm-dd.(g:calendar_diary_extension)
+      let sfile = expand(sfile) . "/" . printf("%04d-%02d-%02d", a:year, a:month, a:day) . g:calendar_diary_extension
+  else
+    " diary files organized in tree folder structure
+    " dir/year/mont/day.(g:calendar_diary_extension)
+    let sfile = expand(g:calendar_diary) . "/" . printf("%04d", a:year)
+    if isdirectory(sfile) == 0
+      if s:make_dir(sfile) != 0
+        return
+      endif
     endif
-  endif
-  let sfile = sfile . "/" . printf("%02d", a:month)
-  if isdirectory(sfile) == 0
-    if s:make_dir(sfile) != 0
-      return
+    let sfile = sfile . "/" . printf("%02d", a:month)
+    if isdirectory(sfile) == 0
+      if s:make_dir(sfile) != 0
+        return
+      endif
     endif
+    let sfile = expand(sfile) . "/" . printf("%02d", a:day) . g:calendar_diary_extension
   endif
-  let sfile = expand(sfile) . "/" . printf("%02d", a:day) . g:calendar_diary_extension
   let sfile = substitute(sfile, ' ', '\\ ', 'g')
   let vbufnr = bufnr('__Calendar')
 
