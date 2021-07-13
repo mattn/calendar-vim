@@ -92,10 +92,9 @@ Specify the directory for the diary files.  The default value is $HOME/diary.
   let g:calendar_diary=$HOME.'/.vim/diary'
 
                                                 *g:calendar_diary_flat_structure*
-To store all the diary files in a flat file structure in the g:calendar_diary 
-folder with no subfolder and filenames in the 
-form YYYY-MM-DD.(g:calendar_diary_extension), set this variable to a value 
-different than 0.  Default value is 0. >
+To store all the diary files in a flat folder structure in the g:calendar_diary 
+folder with filenames in the form YYYY-MM-DD.(g:calendar_diary_extension), set 
+this variable to a value  different than 0.  Default value is 0. >
   let g:calendar_diary_flat_structure = 1
 <
 
