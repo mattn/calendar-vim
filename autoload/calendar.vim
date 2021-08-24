@@ -91,7 +91,7 @@ function! calendar#action(...)
     let list_idx = 0
     let curl = line(".") - 1
     while curl>1
-      if getline(curl) =~ "^([Oo ])"
+      if getline(curl) =~ "^([\* ])"
         let list_idx += 1
         let curl -= 1
       else
@@ -836,7 +836,7 @@ function! calendar#show(...)
   let diary_index = 0
   for diary in g:calendar_diary_list
     if diary_index == g:calendar_diary_list_curr_idx
-      let diary_list = "(O) " . diary["name"]
+      let diary_list = "(*) " . diary["name"]
       let diary_list = "\n" . diary_list . repeat(" ", vcolumn-len(diary_list))
     else
       let diary_list = "( ) " . diary["name"]
@@ -1025,7 +1025,7 @@ function! calendar#show(...)
     endif
   endif
 
-  syn match CalCurrList display "^(O).*$"
+  syn match CalCurrList display "^(\*).*$"
 
   " week number
   if !exists('g:calendar_weeknm') || g:calendar_weeknm <= 2
