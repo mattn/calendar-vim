@@ -20,8 +20,16 @@ endif
 if !exists("g:calendar_navi_label")
   let g:calendar_navi_label = "Prev,Today,Next"
 endif
+if !exists("g:calendar_current_idx")
+  let g:calendar_current_idx = 0
+endif
 if !exists("g:calendar_diary")
-  let g:calendar_diary = "~/diary"
+  if exists("g:calendar_list")
+    let g:calendar_diary = g:calendar_list[g:calendar_current_idx].path
+    let g:calendar_diary_extension = g:calendar_list[g:calendar_current_idx].ext
+  else
+    let g:calendar_diary = "~/diary"
+  endif
 endif
 if !exists("g:calendar_focus_today")
   let g:calendar_focus_today = 0
@@ -77,6 +85,25 @@ endfunction
 "*----------------------------------------------------------------
 "*****************************************************************
 function! calendar#action(...)
+  " for switch calendar list.
+  let text = getline(".")
+  if text =~ "^( )"
+    let list_idx = 0
+    let curl = line(".") - 1
+    while curl>1
+      if getline(curl) =~ "^([Oo ])"
+        let list_idx += 1
+        let curl -= 1
+      else
+        let g:calendar_current_idx = list_idx
+        let g:calendar_diary = g:calendar_list[list_idx].path
+        let g:calendar_diary_extension = g:calendar_list[list_idx].ext
+        call calendar#show(b:CalendarDir, b:CalendarYear, b:CalendarMonth)
+        return
+      endif
+    endwhile
+  endif
+
   " for navi
   if exists('g:calendar_navi')
     let navi = (a:0 > 0)? a:1 : expand("<cWORD>")
@@ -805,6 +832,20 @@ function! calendar#show(...)
     return vdisplay1
   endif
 
+  let vdisplay1 = vdisplay1 . "\nCalendars:\n" . repeat("-", vcolumn)
+  let diary_index = 0
+  for diary in g:calendar_list
+    if diary_index == g:calendar_current_idx
+      let diary_list = "(O) " . diary["name"]
+      let diary_list = "\n" . diary_list . repeat(" ", vcolumn-len(diary_list))
+    else
+      let diary_list = "( ) " . diary["name"]
+      let diary_list = "\n" . diary_list . repeat(" ", vcolumn-len(diary_list))
+    endif
+    let vdisplay1 = vdisplay1 . diary_list
+    let diary_index = diary_index + 1
+  endfor
+
   "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   "+++ build window
   "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -983,6 +1024,8 @@ function! calendar#show(...)
       syn match CalSunday display /^\s*|\s*\([0-9\ ]\d\)/hs=e-1 contains=ALL
     endif
   endif
+
+  syn match CalCurrList display "^(O).*$"
 
   " week number
   if !exists('g:calendar_weeknm') || g:calendar_weeknm <= 2
@@ -1180,3 +1223,4 @@ hi def link CalToday    Directory
 hi def link CalHeader   Special
 hi def link CalMemo     Identifier
 hi def link CalNormal   Normal
+hi def link CalCurrList Error
