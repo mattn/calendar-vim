@@ -20,13 +20,13 @@ endif
 if !exists("g:calendar_navi_label")
   let g:calendar_navi_label = "Prev,Today,Next"
 endif
-if !exists("g:calendar_current_idx")
-  let g:calendar_current_idx = 0
+if !exists("g:calendar_diary_list_curr_idx")
+  let g:calendar_diary_list_curr_idx = 0
 endif
 if !exists("g:calendar_diary")
-  if exists("g:calendar_list")
-    let g:calendar_diary = g:calendar_list[g:calendar_current_idx].path
-    let g:calendar_diary_extension = g:calendar_list[g:calendar_current_idx].ext
+  if exists("g:calendar_diary_list")
+    let g:calendar_diary = g:calendar_diary_list[g:calendar_diary_list_curr_idx].path
+    let g:calendar_diary_extension = g:calendar_diary_list[g:calendar_diary_list_curr_idx].ext
   else
     let g:calendar_diary = "~/diary"
   endif
@@ -95,9 +95,9 @@ function! calendar#action(...)
         let list_idx += 1
         let curl -= 1
       else
-        let g:calendar_current_idx = list_idx
-        let g:calendar_diary = g:calendar_list[list_idx].path
-        let g:calendar_diary_extension = g:calendar_list[list_idx].ext
+        let g:calendar_diary_list_curr_idx = list_idx
+        let g:calendar_diary = g:calendar_diary_list[list_idx].path
+        let g:calendar_diary_extension = g:calendar_diary_list[list_idx].ext
         call calendar#show(b:CalendarDir, b:CalendarYear, b:CalendarMonth)
         return
       endif
@@ -834,8 +834,8 @@ function! calendar#show(...)
 
   let vdisplay1 = vdisplay1 . "\nCalendars:\n" . repeat("-", vcolumn)
   let diary_index = 0
-  for diary in g:calendar_list
-    if diary_index == g:calendar_current_idx
+  for diary in g:calendar_diary_list
+    if diary_index == g:calendar_diary_list_curr_idx
       let diary_list = "(O) " . diary["name"]
       let diary_list = "\n" . diary_list . repeat(" ", vcolumn-len(diary_list))
     else
