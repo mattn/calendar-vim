@@ -24,7 +24,8 @@ if !exists("g:calendar_diary_list_curr_idx")
   let g:calendar_diary_list_curr_idx = 0
 endif
 if !exists("g:calendar_diary")
-  if exists("g:calendar_diary_list")
+  let diary_list_len = len(g:calendar_diary_list)
+  if exists("g:calendar_diary_list") && diary_list_len > 0 && g:calendar_diary_list_curr_idx >= 0 && g:calendar_diary_list_curr_idx < diary_list_len
     let g:calendar_diary = g:calendar_diary_list[g:calendar_diary_list_curr_idx].path
     let g:calendar_diary_extension = g:calendar_diary_list[g:calendar_diary_list_curr_idx].ext
   else
@@ -832,19 +833,21 @@ function! calendar#show(...)
     return vdisplay1
   endif
 
-  let vdisplay1 = vdisplay1 . "\nCalendars:\n" . repeat("-", vcolumn)
-  let diary_index = 0
-  for diary in g:calendar_diary_list
-    if diary_index == g:calendar_diary_list_curr_idx
-      let diary_list = "(*) " . diary["name"]
-      let diary_list = "\n" . diary_list . repeat(" ", vcolumn-len(diary_list))
-    else
-      let diary_list = "( ) " . diary["name"]
-      let diary_list = "\n" . diary_list . repeat(" ", vcolumn-len(diary_list))
-    endif
-    let vdisplay1 = vdisplay1 . diary_list
-    let diary_index = diary_index + 1
-  endfor
+  if exists("g:calendar_diary_list") && len(g:calendar_diary_list) > 0
+    let vdisplay1 = vdisplay1 . "\nCalendars:\n" . repeat("-", vcolumn)
+    let diary_index = 0
+    for diary in g:calendar_diary_list
+      if diary_index == g:calendar_diary_list_curr_idx
+        let diary_list = "(*) " . diary["name"]
+        let diary_list = "\n" . diary_list . repeat(" ", vcolumn-len(diary_list))
+      else
+        let diary_list = "( ) " . diary["name"]
+        let diary_list = "\n" . diary_list . repeat(" ", vcolumn-len(diary_list))
+      endif
+      let vdisplay1 = vdisplay1 . diary_list
+      let diary_index = diary_index + 1
+    endfor
+  endif
 
   "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   "+++ build window
