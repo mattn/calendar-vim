@@ -32,7 +32,7 @@ calendar.vim makes the following commands available:
                           year.  When both [year] and [month] are omitted, the
                           calendar will show the current month.
 
-                                                *calendar-:CalendarVR* 
+                                                *calendar-:CalendarVR*
 :CalendarVR [[year] month]  Show calendar at this year and this month in a
                           vertical split at the right site.  When [year] is
                           omitted, the calendar will show the given month in
@@ -88,8 +88,22 @@ Place a '*' or '+' mark after the day.  Acceptable values are 'left',
 <
 
                                                 *g:calendar_diary*
-Specify the directory for the diary files.  The default value is $HOME/diary.
+Specify the directory for the diary files.  The default value is $HOME/diary. >
   let g:calendar_diary=$HOME.'/.vim/diary'
+<
+
+                                           *g:calendar_diary_list*
+Specify multiple diary configurations. >
+  let g:calendar_diary_list = [
+    \   {'name': 'Note', 'path': $HOME.'/note', 'ext': '.md'},
+    \   {'name': 'Diary', 'path': $HOME.'/diary', 'ext': '.diary.md'},
+    \ ]
+<
+
+                                  *g:calendar_diary_list_curr_idx*
+Specify multiple diary default configuration. The default value is 0. >
+  let g:calendar_diary_list_curr_idx = 1
+<
 
 
                                                 *g:calendar_navi*
