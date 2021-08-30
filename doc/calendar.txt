@@ -39,6 +39,10 @@ calendar.vim makes the following commands available:
                           the current year.  When both [year] and [month] are
                           omitted, the calendar will show the current month.
 
+                                            *calendar-:CalendarSearch*
+:CalendarSearch [keyword]  Search something in current calendar diary book.
+
+
 MAPPINGS                                        *calendar-mappings*
 
 calendar.vim makes the following normal mode mappings available:
@@ -170,6 +174,13 @@ like e.g. 'markdown' or 'pandoc':
 To control the number of months per view, set this variable. The default value
 is 3. >
   let g:calendar_number_of_months = 5
+<
+
+                                                *g:calendar_search_grepprg*
+To set the command |:CalendarSearch| grepprg config. default value is 'grep',
+using system default grep program. If you want use Vim internal grep command
+|:vimgrep|, set value to 'internal'. >
+  let g:calendar_search_grepprg = 'internal'
 <
 
 HOOKS                                           *calendar-hooks*

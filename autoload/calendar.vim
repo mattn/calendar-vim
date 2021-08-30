@@ -53,6 +53,9 @@ endif
 if !exists("g:calendar_diary_extension")
     let g:calendar_diary_extension = ".md"
 endif
+if !exists("g:calendar_search_grepprg")
+  let g:calendar_search_grepprg = "grep"
+endif
 
 "*****************************************************************
 "* Default Calendar key bindings
@@ -1215,6 +1218,15 @@ function! s:CalendarHelp()
   echohl None
   call getchar()
   redraw!
+endfunction
+
+function! calendar#search(keyword)
+  if g:calendar_search_grepprg == "internal"
+    exe "vimgrep /" . a:keyword."/" . escape(g:calendar_diary," ") . "/**/*" . g:calendar_diary_extension . "|cw"
+  else
+    silent execute g:calendar_search_grepprg . " '" . a:keyword . "' " . escape(g:calendar_diary," ") . "/**/*" . g:calendar_diary_extension
+    silent execute "cw"
+  endif
 endfunction
 
 hi def link CalNavi     Search
