@@ -1090,13 +1090,13 @@ function! calendar#show(...)
   if exists('g:calendar_weeknm')
     if g:calendar_weeknm == 1 || g:calendar_weeknm == 2
     syn match CalWeeknm display "WK[0-9\ ]\d"
-    syn match CalWeeknmSign display "+WK[0-9\ ]\d"
+    syn match CalWeeknmSign display " *[+!#$%&@?]WK[0-9\ ]\d"
   elseif g:calendar_weeknm == 3 || g:calendar_weeknm == 4
     syn match CalWeeknm display "KW[0-9\ ]\d"
-    syn match CalWeeknmSign display "+KW[0-9\ ]\d"
+    syn match CalWeeknmSign display " *[+!#$%&@?]KW[0-9\ ]\d"
   elseif g:calendar_weeknm == 6
     syn match CalWeeknm display "W[0-9\ ]\d"
-    syn match CalWeeknmSign display "+W[0-9\ ]\d"
+    syn match CalWeeknmSign display " *[+!#$%&@?]W[0-9\ ]\d"
   endif
 
   " ruler
