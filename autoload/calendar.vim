@@ -56,6 +56,9 @@ endif
 if !exists("g:calendar_search_grepprg")
   let g:calendar_search_grepprg = "grep"
 endif
+if !exists("g:calendar_weeknum_wruler")
+  let g:calendar_weeknum_wruler = "WK"
+endif
 
 "*****************************************************************
 "* Default Calendar key bindings
@@ -511,6 +514,8 @@ function! calendar#show(...)
       let vcolumn = vcolumn + 5
       if g:calendar_weeknm == 5
         let vcolumn = vcolumn - 2
+      elseif g:calendar_weeknm == 6
+        let vcolumn = vcolumn - 1
       endif
     endif
 
@@ -548,6 +553,9 @@ function! calendar#show(...)
     endif
     if exists('g:calendar_monday')
       let vwruler = strpart(vwruler,stridx(vwruler, ' ') + 1).' '.strpart(vwruler,0,stridx(vwruler, ' '))
+    endif
+    if exists('g:calendar_weeknm')
+      let vwruler = vwruler.' '.g:calendar_weeknum_wruler
     endif
     if dir == 2
       let whiteruler = substitute(substitute(whitehrz, ' ', '_', 'g'), '__', '  ', '')
@@ -659,6 +667,8 @@ function! calendar#show(...)
               let vdisplay2 = vdisplay2.'KW '.viweek
             elseif g:calendar_weeknm == 5
               let vdisplay2 = vdisplay2.' '.viweek
+            elseif g:calendar_weeknm == 6
+              let vdisplay2 = vdisplay2.'W0'.viweek
             endif
           else
             if g:calendar_weeknm <= 2
@@ -667,6 +677,8 @@ function! calendar#show(...)
               let vdisplay2 = vdisplay2.'KW'.viweek
             elseif g:calendar_weeknm == 5
               let vdisplay2 = vdisplay2.viweek
+            elseif g:calendar_weeknm == 6
+              let vdisplay2 = vdisplay2.'W'.viweek
             endif
           endif
           let viweek = viweek + 1
@@ -710,6 +722,8 @@ function! calendar#show(...)
             let vdisplay2 = vdisplay2.'KW '.viweek
           elseif g:calendar_weeknm == 5
             let vdisplay2 = vdisplay2.' '.viweek
+          elseif g:calendar_weeknm == 6
+            let vdisplay2 = vdisplay2.'W0'.viweek
           endif
         else
           if g:calendar_weeknm <= 2
@@ -718,6 +732,8 @@ function! calendar#show(...)
             let vdisplay2 = vdisplay2.'KW'.viweek
           elseif g:calendar_weeknm == 5
             let vdisplay2 = vdisplay2.viweek
+          elseif g:calendar_weeknm == 6
+            let vdisplay2 = vdisplay2.'W'.viweek
           endif
         endif
       endif
