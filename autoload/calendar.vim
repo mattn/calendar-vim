@@ -94,7 +94,9 @@ endfunction
 function! calendar#action(...)
   " for switch calendar list.
   let text = getline(".")
-  if text =~ "^( )"
+  if text =~ "^([\*])"
+    return
+  elseif text =~ "^( )"
     let list_idx = 0
     let curl = line(".") - 1
     while curl>1
