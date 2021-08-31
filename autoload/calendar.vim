@@ -251,7 +251,7 @@ function! calendar#action(...)
   " for week number
   if day == 0
     const word = expand("<cword>")
-    if exists("g:calendar_weeknm") && week == 8 && word != ""
+    if exists("g:calendar_weeknm") && word != ""
       let weeknm = matchstr(word, '\d\+')
       "       2019/12(Dec)
       " Mon Tue Wed Thu Fri Sat Sun Week
@@ -684,36 +684,37 @@ function! calendar#show(...)
       let vinpcur = vinpcur + 1
       if vinpcur % 7 == 0
         if exists('g:calendar_weeknm')
+          let vwsign = calendar#weekNumberSign(viweek, vyear)
           if dir == 2
             let vdisplay2 = vdisplay2.whitehrz
           endif
           if g:calendar_mark != 'right'
-            let vdisplay2 = vdisplay2.' '
+            let vdisplay2 = vdisplay2
           endif
           " if given g:calendar_weeknm, show week number
           if viweek < 10
             if g:calendar_weeknm == 1
-              let vdisplay2 = vdisplay2.'WK0'.viweek
+              let vdisplay2 = vdisplay2.vwsign.'WK0'.viweek
             elseif g:calendar_weeknm == 2
-              let vdisplay2 = vdisplay2.'WK '.viweek
+              let vdisplay2 = vdisplay2.vwsign.'WK '.viweek
             elseif g:calendar_weeknm == 3
-              let vdisplay2 = vdisplay2.'KW0'.viweek
+              let vdisplay2 = vdisplay2.vwsign.'KW0'.viweek
             elseif g:calendar_weeknm == 4
-              let vdisplay2 = vdisplay2.'KW '.viweek
+              let vdisplay2 = vdisplay2.vwsign.'KW '.viweek
             elseif g:calendar_weeknm == 5
-              let vdisplay2 = vdisplay2.' '.viweek
+              let vdisplay2 = vdisplay2.vwsign.' '.viweek
             elseif g:calendar_weeknm == 6
-              let vdisplay2 = vdisplay2.'W0'.viweek
+              let vdisplay2 = vdisplay2.vwsign.'W0'.viweek
             endif
           else
             if g:calendar_weeknm <= 2
-              let vdisplay2 = vdisplay2.'WK'.viweek
+              let vdisplay2 = vdisplay2.vwsign.'WK'.viweek
             elseif g:calendar_weeknm == 3 || g:calendar_weeknm == 4
-              let vdisplay2 = vdisplay2.'KW'.viweek
+              let vdisplay2 = vdisplay2.vwsign.'KW'.viweek
             elseif g:calendar_weeknm == 5
-              let vdisplay2 = vdisplay2.viweek
+              let vdisplay2 = vdisplay2.vwsign.viweek
             elseif g:calendar_weeknm == 6
-              let vdisplay2 = vdisplay2.'W'.viweek
+              let vdisplay2 = vdisplay2.vwsign.'W'.viweek
             endif
           endif
           let viweek = viweek + 1
@@ -744,31 +745,32 @@ function! calendar#show(...)
           let vdisplay2 = vdisplay2.whitehrz
         endif
         if g:calendar_mark != 'right'
-          let vdisplay2 = vdisplay2.' '
+          let vdisplay2 = vdisplay2
         endif
+        let vwsign = calendar#weekNumberSign(viweek, vyear)
         if viweek < 10
           if g:calendar_weeknm == 1
-            let vdisplay2 = vdisplay2.'WK0'.viweek
+            let vdisplay2 = vdisplay2.vwsign.'WK0'.viweek
           elseif g:calendar_weeknm == 2
-            let vdisplay2 = vdisplay2.'WK '.viweek
+            let vdisplay2 = vdisplay2.vwsign.'WK '.viweek
           elseif g:calendar_weeknm == 3
-            let vdisplay2 = vdisplay2.'KW0'.viweek
+            let vdisplay2 = vdisplay2.vwsign.'KW0'.viweek
           elseif g:calendar_weeknm == 4
-            let vdisplay2 = vdisplay2.'KW '.viweek
+            let vdisplay2 = vdisplay2.vwsign.'KW '.viweek
           elseif g:calendar_weeknm == 5
-            let vdisplay2 = vdisplay2.' '.viweek
+            let vdisplay2 = vdisplay2.vwsign.' '.viweek
           elseif g:calendar_weeknm == 6
-            let vdisplay2 = vdisplay2.'W0'.viweek
+            let vdisplay2 = vdisplay2.vwsign.'W0'.viweek
           endif
         else
           if g:calendar_weeknm <= 2
-            let vdisplay2 = vdisplay2.'WK'.viweek
+            let vdisplay2 = vdisplay2.vwsign.'WK'.viweek
           elseif g:calendar_weeknm == 3 || g:calendar_weeknm == 4
-            let vdisplay2 = vdisplay2.'KW'.viweek
+            let vdisplay2 = vdisplay2.vwsign.'KW'.viweek
           elseif g:calendar_weeknm == 5
-            let vdisplay2 = vdisplay2.viweek
+            let vdisplay2 = vdisplay2.vwsign.viweek
           elseif g:calendar_weeknm == 6
-            let vdisplay2 = vdisplay2.'W'.viweek
+            let vdisplay2 = vdisplay2.vwsign.'W'.viweek
           endif
         endif
       endif
@@ -1088,10 +1090,13 @@ function! calendar#show(...)
   if exists('g:calendar_weeknm')
     if g:calendar_weeknm == 1 || g:calendar_weeknm == 2
     syn match CalWeeknm display "WK[0-9\ ]\d"
+    syn match CalWeeknmSign display "+WK[0-9\ ]\d"
   elseif g:calendar_weeknm == 3 || g:calendar_weeknm == 4
     syn match CalWeeknm display "KW[0-9\ ]\d"
+    syn match CalWeeknmSign display "+KW[0-9\ ]\d"
   elseif g:calendar_weeknm == 6
     syn match CalWeeknm display "W[0-9\ ]\d"
+    syn match CalWeeknmSign display "+W[0-9\ ]\d"
   endif
 
   " ruler
@@ -1215,6 +1220,14 @@ function! calendar#sign(day, month, year)
   return filereadable(expand(sfile))
 endfunction
 
+function! calendar#weekNumberSign(weeknm, year)
+  let sfile = g:calendar_diary."/".printf("%04d", a:year)."/week/".printf("%02d", a:weeknm).g:calendar_diary_extension
+  if filereadable(expand(sfile)) != 0
+    return "+"
+  endif
+  return " "
+endfunction
+
 "*****************************************************************
 "* CalendarVar : get variable
 "*----------------------------------------------------------------
@@ -1320,6 +1333,7 @@ hi def link CalSaturday Statement
 hi def link CalSunday   Type
 hi def link CalRuler    StatusLine
 hi def link CalWeeknm   Comment
+hi def link CalWeeknmSign String
 hi def link CalToday    Directory
 hi def link CalHeader   Special
 hi def link CalMemo     Identifier
