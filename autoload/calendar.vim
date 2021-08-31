@@ -204,9 +204,9 @@ function! calendar#action(...)
   endif
   let sline = substitute(strpart(getline(hdr),cnr,21),'\s*\(.*\)\s*','\1','')
   if b:CalendarDir != 2
-    if (col(".")-cnr) > 21
-      return
-    endif
+    " if (col(".")-cnr) > 21
+    "   return
+    " endif
 
     " extract day
     if g:calendar_mark == 'right' && col('.') > 1
@@ -228,9 +228,11 @@ function! calendar#action(...)
       let cursorchar = getline(lnum)[col('.') - 1]
     endwhile
   endif
-  if day == 0
-    return
-  endif
+
+  " if day == 0
+  "   return
+  " endif
+
   " extract year and month
   if exists('g:calendar_erafmt') && g:calendar_erafmt !~ "^\s*$"
     let year = matchstr(substitute(sline, '/.*', '', ''), '\d\+')
@@ -245,6 +247,39 @@ function! calendar#action(...)
     let year  = matchstr(substitute(sline, '/.*', '', ''), '[^0].*')
     let month = matchstr(substitute(sline, '\d*/\(\d\d\=\).*', '\1', ""), '[^0].*')
   endif
+
+  " for week number
+  if day == 0
+    const word = expand("<cword>")
+    if exists("g:calendar_weeknm") && week == 8 && word != ""
+      let weeknm = matchstr(word, '\d\+')
+      "       2019/12(Dec)
+      " Mon Tue Wed Thu Fri Sat Sun Week
+      "  30  31                      W01
+      "
+      "       2020/1(Jan)
+      " Mon Tue Wed Thu Fri Sat Sun Week
+      "           1   2   3   4   5  W01
+      if month == 12 && weeknm == 1
+        let year = year + 1
+      endif
+
+      "           2021/12(Jan)
+      " Mon Tue Wed Thu Fri Sat Sun Week
+      "  27  28  29  30  31          W52
+      "
+      "           2022/1(Jan)
+      " Mon Tue Wed Thu Fri Sat Sun Week
+      "                       1   2  W52
+      if month == 1 && weeknm > 50
+        let year = year - 1
+      endif
+      call calendar#week(weeknm, year)
+    endif
+
+    return
+  endif
+
   " call the action function
   exe "call " . g:calendar_action . "(day, month, year, week, dir)"
 endfunc
@@ -1050,10 +1085,13 @@ function! calendar#show(...)
   syn match CalCurrList display "^(\*).*$"
 
   " week number
-  if !exists('g:calendar_weeknm') || g:calendar_weeknm <= 2
+  if exists('g:calendar_weeknm')
+    if g:calendar_weeknm == 1 || g:calendar_weeknm == 2
     syn match CalWeeknm display "WK[0-9\ ]\d"
-  else
+  elseif g:calendar_weeknm == 3 || g:calendar_weeknm == 4
     syn match CalWeeknm display "KW[0-9\ ]\d"
+  elseif g:calendar_weeknm == 6
+    syn match CalWeeknm display "W[0-9\ ]\d"
   endif
 
   " ruler
@@ -1132,6 +1170,38 @@ function! calendar#diary(day, month, year, week, dir)
   let vmnth = getbufvar(vbufnr, "CalendarMonth")
   exe "auto BufDelete ".escape(sfile, ' \\')." call calendar#show(" . dir . "," . vyear . "," . vmnth . ")"
 endfunc
+
+function! calendar#week(weeknm, year)
+  " build the file name and create directories as needed
+  if !isdirectory(expand(g:calendar_diary))
+    call confirm("please create diary directory : ".g:calendar_diary, 'OK')
+    return
+  endif
+  let sfile = expand(g:calendar_diary) . "/" . printf("%04d", a:year)
+  if isdirectory(sfile) == 0
+    if s:make_dir(sfile) != 0
+      return
+    endif
+  endif
+  let sfile = sfile . "/week"
+  if isdirectory(sfile) == 0
+    if s:make_dir(sfile) != 0
+      return
+    endif
+  endif
+  let sfile = expand(sfile) . "/" . printf("%02d", a:weeknm) . g:calendar_diary_extension
+  let sfile = substitute(sfile, ' ', '\\ ', 'g')
+  let vbufnr = bufnr('__Calendar')
+
+  " load the file
+  exe "wincmd w"
+  exe "edit  " . sfile
+  exe "setfiletype " . g:calendar_filetype
+  let dir = getbufvar(vbufnr, "CalendarDir")
+  let vyear = getbufvar(vbufnr, "CalendarYear")
+  let vmnth = getbufvar(vbufnr, "CalendarMonth")
+  exe "auto BufDelete ".escape(sfile, ' \\')." call calendar#show(" . dir . "," . vyear . "," . vmnth . ")"
+endfunction
 
 "*****************************************************************
 "* sign : calendar sign function
