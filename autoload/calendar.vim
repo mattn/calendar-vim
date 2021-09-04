@@ -113,6 +113,29 @@ function! calendar#action(...)
     endwhile
   endif
 
+  " for year and month.
+  if text =~ '[ ]*+\?\d\+\/+\?\d\+([^)]*)'
+    let slashIdx = stridx(text, "/")
+    let curCol = col(".") - 1
+    let hyear  = matchstr(text, '\d\{4,}')
+    let hmonth = matchstr(substitute(text, '[ ]*+\?\d*\/+\?\(\d\d\=\).*', '\1', ""), '[^0].*')
+    if (curCol == slashIdx)
+      return
+    elseif (curCol < slashIdx)
+      call calendar#year(hyear)
+    else
+      call calendar#month(hmonth, hyear)
+    endif
+    return
+  endif
+  " let head = expand("<cWORD>")
+  " if head =~ '+\?\d\+\/+\?\d\+([^)]*)'
+  "   let hyear  = matchstr(head, '\d\{4,}')
+  "   let hmonth = matchstr(substitute(head, '+\?\d*\/+\?\(\d\d\=\).*', '\1', ""), '[^0].*')
+  "   call calendar#month(hmonth, hyear)
+  "   return
+  " endif
+
   " for navi
   if exists('g:calendar_navi')
     let navi = (a:0 > 0)? a:1 : expand("<cWORD>")
@@ -237,8 +260,8 @@ function! calendar#action(...)
 
   " extract year and month
   if exists('g:calendar_erafmt') && g:calendar_erafmt !~ "^\s*$"
-    let year = matchstr(substitute(sline, '/.*', '', ''), '\d\+')
-    let month = matchstr(substitute(sline, '.*/\(\d\d\=\).*', '\1', ""), '[^0].*')
+    let year = matchstr(substitute(sline, '/.*', '', ''), '+\?\d\+')
+    let month = matchstr(substitute(sline, '.*/+\?\(\d\d\=\).*', '\1', ""), '[^0].*')
     if g:calendar_erafmt =~ '.*,[+-]*\d\+'
       let veranum = substitute(g:calendar_erafmt,'.*,\([+-]*\d\+\)','\1','')
       if year-veranum > 0
@@ -246,8 +269,8 @@ function! calendar#action(...)
       endif
     endif
   else
-    let year  = matchstr(substitute(sline, '/.*', '', ''), '[^0].*')
-    let month = matchstr(substitute(sline, '\d*/\(\d\d\=\).*', '\1', ""), '[^0].*')
+    let year  = matchstr(substitute(sline, '+\?\(\d\{4,}\)\/.*', '\1', ''), '[^0].*')
+    let month = matchstr(substitute(sline, '+\?\d*/+\?\(\d\d\=\).*', '\1', ""), '[^0].*')
   endif
 
   " for week number
@@ -279,6 +302,10 @@ function! calendar#action(...)
       call calendar#week(weeknm, year)
     endif
 
+    return
+  endif
+
+  if year == 0 || month == 0
     return
   endif
 
@@ -560,22 +587,24 @@ function! calendar#show(...)
     "--- displaying
     "--------------------------------------------------------------
     " build header
+    let vysign = calendar#yearSign(vyear)
+    let vmsign = calendar#monthSign(vmnth, vyear)
     if exists('g:calendar_erafmt') && g:calendar_erafmt !~ "^\s*$"
       if g:calendar_erafmt =~ '.*,[+-]*\d\+'
         let veranum = substitute(g:calendar_erafmt,'.*,\([+-]*\d\+\)','\1','')
         if vyear+veranum > 0
           let vdisplay2 = substitute(g:calendar_erafmt,'\(.*\),.*','\1','')
-          let vdisplay2 = vdisplay2.(vyear+veranum).'/'.vmnth.'('
+          let vdisplay2 = vdisplay2.vysign.(vyear+veranum).'/'..vmsign.vmnth.'('
         else
-          let vdisplay2 = vyear.'/'.vmnth.'('
+          let vdisplay2 = vysign.vyear.'/'.vmsign.vmnth.'('
         endif
       else
-        let vdisplay2 = vyear.'/'.vmnth.'('
+        let vdisplay2 = vysign.vyear.'/'.vmsign.vmnth.'('
       endif
       let vdisplay2 = strpart("                           ",
         \ 1,(vcolumn-strlen(vdisplay2))/2-2).vdisplay2
     else
-      let vdisplay2 = vyear.'/'.vmnth.'('
+      let vdisplay2 = vysign.vyear.'/'.vmsign.vmnth.'('
       let vdisplay2 = strpart("                           ",
         \ 1,(vcolumn-strlen(vdisplay2))/2-2).vdisplay2
     endif
@@ -1049,7 +1078,11 @@ function! calendar#show(...)
     syn match CalMemo display "[+!#$%&@?]\s*\d*"
   endif
   " header
-  syn match CalHeader display "[^ ]*\d\+\/\d\+([^)]*)"
+  " syn match CalHeader display "[^ ]*+\?\d\+\/+\?\d\+([^)]*)"
+  syn match CalHeaderYear display "[^ ]*\d\{4,}\/"
+  syn match CalHeaderSignYear display "[^ ]*+\d\{4,}"
+  syn match CalHeaderMonth display "\d\+([^)]*)"
+  syn match CalHeaderSignMonth display "+\d\+([^)]*)"
 
   " navi
   if exists('g:calendar_navi')
@@ -1210,6 +1243,66 @@ function! calendar#week(weeknm, year)
   exe "auto BufDelete ".escape(sfile, ' \\')." call calendar#show(" . dir . "," . vyear . "," . vmnth . ")"
 endfunction
 
+function! calendar#month(month, year)
+  " build the file name and create directories as needed
+  if !isdirectory(expand(g:calendar_diary))
+    call confirm("please create diary directory : ".g:calendar_diary, 'OK')
+    return
+  endif
+  let sfile = expand(g:calendar_diary) . "/" . printf("%04d", a:year)
+  if isdirectory(sfile) == 0
+    if s:make_dir(sfile) != 0
+      return
+    endif
+  endif
+  let sfile = sfile . "/" . printf("%02d", a:month)
+  if isdirectory(sfile) == 0
+    if s:make_dir(sfile) != 0
+      return
+    endif
+  endif
+  " TODO
+  let sfile = expand(sfile) . "/README" . g:calendar_diary_extension
+  let sfile = substitute(sfile, ' ', '\\ ', 'g')
+  let vbufnr = bufnr('__Calendar')
+
+  " load the file
+  exe "wincmd w"
+  exe "edit  " . sfile
+  exe "setfiletype " . g:calendar_filetype
+  let dir = getbufvar(vbufnr, "CalendarDir")
+  let vyear = getbufvar(vbufnr, "CalendarYear")
+  let vmnth = getbufvar(vbufnr, "CalendarMonth")
+  exe "auto BufDelete ".escape(sfile, ' \\')." call calendar#show(" . dir . "," . vyear . "," . vmnth . ")"
+endfunction
+
+function! calendar#year(year)
+  " build the file name and create directories as needed
+  if !isdirectory(expand(g:calendar_diary))
+    call confirm("please create diary directory : ".g:calendar_diary, 'OK')
+    return
+  endif
+  let sfile = expand(g:calendar_diary) . "/" . printf("%04d", a:year)
+  if isdirectory(sfile) == 0
+    if s:make_dir(sfile) != 0
+      return
+    endif
+  endif
+  let sfile = expand(sfile) . "/README" . g:calendar_diary_extension
+  let sfile = substitute(sfile, ' ', '\\ ', 'g')
+  let vbufnr = bufnr('__Calendar')
+
+  " load the file
+  exe "wincmd w"
+  exe "edit  " . sfile
+  exe "setfiletype " . g:calendar_filetype
+  let dir = getbufvar(vbufnr, "CalendarDir")
+  let vyear = getbufvar(vbufnr, "CalendarYear")
+  let vmnth = getbufvar(vbufnr, "CalendarMonth")
+  exe "auto BufDelete ".escape(sfile, ' \\')." call calendar#show(" . dir . "," . vyear . "," . vmnth . ")"
+endfunction
+
+
 "*****************************************************************
 "* sign : calendar sign function
 "*----------------------------------------------------------------
@@ -1228,6 +1321,22 @@ function! calendar#weekNumberSign(weeknm, year)
     return "+"
   endif
   return " "
+endfunction
+
+function! calendar#monthSign(month, year)
+  let sfile = g:calendar_diary."/".printf("%04d", a:year)."/".printf("%02d", a:month)."/README".g:calendar_diary_extension
+  if filereadable(expand(sfile)) != 0
+    return "+"
+  endif
+  return ""
+endfunction
+
+function! calendar#yearSign(year)
+  let sfile = g:calendar_diary."/".printf("%04d", a:year)."/README".g:calendar_diary_extension
+  if filereadable(expand(sfile)) != 0
+    return "+"
+  endif
+  return ""
 endfunction
 
 "*****************************************************************
@@ -1338,6 +1447,10 @@ hi def link CalWeeknm   Comment
 hi def link CalWeeknmSign String
 hi def link CalToday    Directory
 hi def link CalHeader   Special
+hi def link CalHeaderYear   Special
+hi def link CalHeaderMonth  Special
+hi def link CalHeaderSignYear Identifier
+hi def link CalHeaderSignMonth Identifier
 hi def link CalMemo     Identifier
 hi def link CalNormal   Normal
 hi def link CalCurrList Error
