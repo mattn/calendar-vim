@@ -170,8 +170,8 @@ function! calendar#action(...)
       let navi = ''
     endif
     if navi != ''
-      if g:calendar_focus_today == 1 && search("\*","w") > 0
-        silent execute "normal! gg/\*\<cr>"
+      if g:calendar_focus_today == 1 && search("\\*\\d","w") > 0
+        silent execute "normal! gg/\\*\\d\<cr>"
         return
       else
         if curl < line('$')/2
