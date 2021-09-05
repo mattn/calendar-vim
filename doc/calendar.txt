@@ -64,8 +64,16 @@ Disable standard mappings:
   let g:calendar_no_mappings=0
 
                                                 *g:calendar_focus_today*
+Deprecated. please use |g:calendar_focus_type| instead.
+
 Keeps focus when moving to next or previous calendar: >
   let g:calendar_focus_today = 1
+<
+                                                 *g:calendar_focus_type*
+Set cursor focus type when moving to next or previous calendar: >
+  let g:calendar_focus_type = 'today'  " keep cursor on the date of today.
+  let g:calendar_focus_type = 'cursor' " keep cursor on the last cursor pos.
+  let g:calendar_focus_type = 'default' " keep cursor on the navigator.
 <
 
                                                 *g:calendar_keys*
@@ -157,6 +165,7 @@ To show the week number, set this variable.  There are four valid settings: >
   let g:calendar_weeknm = 3 " KW01
   let g:calendar_weeknm = 4 " KW 1
   let g:calendar_weeknm = 5 " 1
+  let g:calendar_weeknm = 6 " W01
 <
 
                                                 *g:calendar_datetime*
@@ -182,6 +191,15 @@ using system default grep program. If you want use Vim internal grep command
 |:vimgrep|, set value to 'internal'. >
   let g:calendar_search_grepprg = 'internal'
 <
+
+                                                *g:ccalendar_weekly_dirname*
+To set the weekly directory name. default is 'week'.
+
+                                                *g:ccalendar_monthly_filename*
+To set the monthly file name. default is 'README'.
+
+                                                *g:ccalendar_yearly_filename*
+To set the yearly file name. default is 'README'.
 
 HOOKS                                           *calendar-hooks*
 
