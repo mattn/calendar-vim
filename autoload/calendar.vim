@@ -1327,7 +1327,7 @@ function! calendar#sign(day, month, year)
 endfunction
 
 function! calendar#weekNumberSign(weeknm, year)
-  let sfile = g:calendar_diary."/".printf("%04d", a:year)."/week/".printf("%02d", a:weeknm).g:calendar_diary_extension
+  let sfile = g:calendar_diary."/".printf("%04d", a:year)."/" . g:calendar_weekly_dirname . "/".printf("%02d", a:weeknm).g:calendar_diary_extension
   if filereadable(expand(sfile)) != 0
     return "+"
   endif
