@@ -1188,116 +1188,45 @@ endfunc
 "*   year  : year you actioned
 "*****************************************************************
 function! calendar#diary(day, month, year, week, dir)
-  " build the file name and create directories as needed
-  if !isdirectory(expand(g:calendar_diary))
-    call confirm("please create diary directory : ".g:calendar_diary, 'OK')
-    return
-  endif
-  let sfile = expand(g:calendar_diary) . "/" . printf("%04d", a:year)
-  if isdirectory(sfile) == 0
-    if s:make_dir(sfile) != 0
-      return
-    endif
-  endif
-  let sfile = sfile . "/" . printf("%02d", a:month)
-  if isdirectory(sfile) == 0
-    if s:make_dir(sfile) != 0
-      return
-    endif
-  endif
-  let sfile = expand(sfile) . "/" . printf("%02d", a:day) . g:calendar_diary_extension
-  let sfile = substitute(sfile, ' ', '\\ ', 'g')
-  let vbufnr = bufnr('__Calendar')
-
-  " load the file
-  exe "wincmd w"
-  exe "edit  " . sfile
-  exe "setfiletype " . g:calendar_filetype
-  let dir = getbufvar(vbufnr, "CalendarDir")
-  let vyear = getbufvar(vbufnr, "CalendarYear")
-  let vmnth = getbufvar(vbufnr, "CalendarMonth")
-  exe "auto BufDelete ".escape(sfile, ' \\')." call calendar#show(" . dir . "," . vyear . "," . vmnth . ")"
+  call calendar#open(printf("%04d", a:year) . "/" . printf("%02d", a:month) . "/" . printf("%02d", a:day) . g:calendar_diary_extension)
 endfunc
 
 function! calendar#week(weeknm, year)
-  " build the file name and create directories as needed
-  if !isdirectory(expand(g:calendar_diary))
-    call confirm("please create diary directory : ".g:calendar_diary, 'OK')
-    return
-  endif
-  let sfile = expand(g:calendar_diary) . "/" . printf("%04d", a:year)
-  if isdirectory(sfile) == 0
-    if s:make_dir(sfile) != 0
-      return
-    endif
-  endif
-  let sfile = sfile . "/week"
-  if isdirectory(sfile) == 0
-    if s:make_dir(sfile) != 0
-      return
-    endif
-  endif
-  let sfile = expand(sfile) . "/" . printf("%02d", a:weeknm) . g:calendar_diary_extension
-  let sfile = substitute(sfile, ' ', '\\ ', 'g')
-  let vbufnr = bufnr('__Calendar')
-
-  " load the file
-  exe "wincmd w"
-  exe "edit  " . sfile
-  exe "setfiletype " . g:calendar_filetype
-  let dir = getbufvar(vbufnr, "CalendarDir")
-  let vyear = getbufvar(vbufnr, "CalendarYear")
-  let vmnth = getbufvar(vbufnr, "CalendarMonth")
-  exe "auto BufDelete ".escape(sfile, ' \\')." call calendar#show(" . dir . "," . vyear . "," . vmnth . ")"
+  call calendar#open(printf("%04d", a:year) . "/week/" . printf("%02d", a:weeknm) . g:calendar_diary_extension)
 endfunction
 
 function! calendar#month(month, year)
-  " build the file name and create directories as needed
-  if !isdirectory(expand(g:calendar_diary))
-    call confirm("please create diary directory : ".g:calendar_diary, 'OK')
-    return
-  endif
-  let sfile = expand(g:calendar_diary) . "/" . printf("%04d", a:year)
-  if isdirectory(sfile) == 0
-    if s:make_dir(sfile) != 0
-      return
-    endif
-  endif
-  let sfile = sfile . "/" . printf("%02d", a:month)
-  if isdirectory(sfile) == 0
-    if s:make_dir(sfile) != 0
-      return
-    endif
-  endif
-  " TODO
-  let sfile = expand(sfile) . "/README" . g:calendar_diary_extension
-  let sfile = substitute(sfile, ' ', '\\ ', 'g')
-  let vbufnr = bufnr('__Calendar')
-
-  " load the file
-  exe "wincmd w"
-  exe "edit  " . sfile
-  exe "setfiletype " . g:calendar_filetype
-  let dir = getbufvar(vbufnr, "CalendarDir")
-  let vyear = getbufvar(vbufnr, "CalendarYear")
-  let vmnth = getbufvar(vbufnr, "CalendarMonth")
-  exe "auto BufDelete ".escape(sfile, ' \\')." call calendar#show(" . dir . "," . vyear . "," . vmnth . ")"
+  call calendar#open(printf("%04d", a:year) . "/" . printf("%02d", a:month) . "/README" . g:calendar_diary_extension)
 endfunction
 
 function! calendar#year(year)
+  call calendar#open(printf("%04d", a:year) . "/README" . g:calendar_diary_extension)
+endfunction
+
+function! calendar#open(path)
   " build the file name and create directories as needed
   if !isdirectory(expand(g:calendar_diary))
     call confirm("please create diary directory : ".g:calendar_diary, 'OK')
     return
   endif
-  let sfile = expand(g:calendar_diary) . "/" . printf("%04d", a:year)
-  if isdirectory(sfile) == 0
-    if s:make_dir(sfile) != 0
-      return
+  let pathList = split(a:path, '\/\|\\')
+  let idx = 0
+  let sfile = expand(g:calendar_diary)
+  for pat in pathList
+    if idx < len(pathList) - 1
+      let sfile = sfile . "/" . pat
+      if isdirectory(sfile) == 0
+        if s:make_dir(sfile) != 0
+          return
+        endif
+      endif
+    else
+      let sfile = expand(sfile) . "/" . pat
+      let sfile = substitute(sfile, ' ', '\\ ', 'g')
     endif
-  endif
-  let sfile = expand(sfile) . "/README" . g:calendar_diary_extension
-  let sfile = substitute(sfile, ' ', '\\ ', 'g')
+    let idx = idx + 1
+  endfor
+
   let vbufnr = bufnr('__Calendar')
 
   " load the file
