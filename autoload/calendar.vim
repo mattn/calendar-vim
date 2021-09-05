@@ -62,6 +62,15 @@ endif
 if !exists("g:calendar_weeknum_wruler")
   let g:calendar_weeknum_wruler = "WK"
 endif
+if !exists("g:calendar_weekly_dirname")
+  let g:calendar_weekly_dirname = "week"
+endif
+if !exists("g:calendar_monthly_filename")
+  let g:calendar_monthly_filename = "README"
+endif
+if !exists("g:calendar_yearly_filename")
+  let g:calendar_yearly_filename = "README"
+endif
 
 "*****************************************************************
 "* Default Calendar key bindings
@@ -1192,15 +1201,15 @@ function! calendar#diary(day, month, year, week, dir)
 endfunc
 
 function! calendar#week(weeknm, year)
-  call calendar#open(printf("%04d", a:year) . "/week/" . printf("%02d", a:weeknm) . g:calendar_diary_extension)
+  call calendar#open(printf("%04d", a:year) . "/" . g:calendar_weekly_dirname . "/" . printf("%02d", a:weeknm) . g:calendar_diary_extension)
 endfunction
 
 function! calendar#month(month, year)
-  call calendar#open(printf("%04d", a:year) . "/" . printf("%02d", a:month) . "/README" . g:calendar_diary_extension)
+  call calendar#open(printf("%04d", a:year) . "/" . printf("%02d", a:month) . "/" . g:calendar_monthly_filename . g:calendar_diary_extension)
 endfunction
 
 function! calendar#year(year)
-  call calendar#open(printf("%04d", a:year) . "/README" . g:calendar_diary_extension)
+  call calendar#open(printf("%04d", a:year) . "/" . g:calendar_yearly_filename . g:calendar_diary_extension)
 endfunction
 
 function! calendar#open(path)
