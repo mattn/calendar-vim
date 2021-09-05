@@ -32,8 +32,11 @@ if !exists("g:calendar_diary")
     let g:calendar_diary = "~/diary"
   endif
 endif
-if !exists("g:calendar_focus_today")
-  let g:calendar_focus_today = 0
+if exists("g:calendar_focus_today") && g:calendar_focus_today == 1
+  let g:calendar_focus_type = "today"
+endif
+if !exists("g:calendar_focus_type")
+  let g:calendar_focus_type = "default"
 endif
 if !exists("g:calendar_datetime")
  \|| (g:calendar_datetime != ''
@@ -92,6 +95,59 @@ endfunction
 "*----------------------------------------------------------------
 "*****************************************************************
 function! calendar#action(...)
+  let save_cursor = getpos(".")
+
+  " for navi
+  if exists('g:calendar_navi')
+    let navi = (a:0 > 0)? a:1 : expand("<cWORD>")
+    let curl = line(".")
+    let curp = getpos(".")
+    if navi == '<' . get(split(g:calendar_navi_label, ','), 0, '')
+      if b:CalendarMonth > 1
+        call calendar#show(b:CalendarDir, b:CalendarYear, b:CalendarMonth-1)
+      else
+        call calendar#show(b:CalendarDir, b:CalendarYear-1, 12)
+      endif
+    elseif navi == get(split(g:calendar_navi_label, ','), 2, '') . '>'
+      if b:CalendarMonth < 12
+        call calendar#show(b:CalendarDir, b:CalendarYear, b:CalendarMonth+1)
+      else
+        call calendar#show(b:CalendarDir, b:CalendarYear+1, 1)
+      endif
+    elseif navi == get(split(g:calendar_navi_label, ','), 1, '')
+      call calendar#show(b:CalendarDir)
+      if exists('g:calendar_today')
+        exe "call " . g:calendar_today . "()"
+      endif
+    elseif navi == 'NextYear'
+      call calendar#show(b:CalendarDir, b:CalendarYear + 1, b:CalendarMonth)
+      call setpos('.', curp)
+      return
+    elseif navi == 'PrevYear'
+      call calendar#show(b:CalendarDir, b:CalendarYear - 1, b:CalendarMonth)
+      call setpos('.', curp)
+      return
+    else
+      let navi = ''
+    endif
+    if navi != ''
+      if g:calendar_focus_type == 'cursor'
+        call setpos('.', save_cursor)
+        return
+      elseif g:calendar_focus_type == 'today' && search("\\*\\d","w") > 0
+        silent execute "normal! gg/\\*\\d\<cr>"
+        return
+      else
+        if curl < line('$')/2
+          silent execute "normal! gg0/".navi."\<cr>"
+        else
+          silent execute "normal! G$?".navi."\<cr>"
+        endif
+        return
+      endif
+    endif
+  endif
+
   " for switch calendar list.
   let text = getline(".")
   if text =~ "^([\*])"
@@ -135,54 +191,6 @@ function! calendar#action(...)
   "   call calendar#month(hmonth, hyear)
   "   return
   " endif
-
-  " for navi
-  if exists('g:calendar_navi')
-    let navi = (a:0 > 0)? a:1 : expand("<cWORD>")
-    let curl = line(".")
-    let curp = getpos(".")
-    if navi == '<' . get(split(g:calendar_navi_label, ','), 0, '')
-      if b:CalendarMonth > 1
-        call calendar#show(b:CalendarDir, b:CalendarYear, b:CalendarMonth-1)
-      else
-        call calendar#show(b:CalendarDir, b:CalendarYear-1, 12)
-      endif
-    elseif navi == get(split(g:calendar_navi_label, ','), 2, '') . '>'
-      if b:CalendarMonth < 12
-        call calendar#show(b:CalendarDir, b:CalendarYear, b:CalendarMonth+1)
-      else
-        call calendar#show(b:CalendarDir, b:CalendarYear+1, 1)
-      endif
-    elseif navi == get(split(g:calendar_navi_label, ','), 1, '')
-      call calendar#show(b:CalendarDir)
-      if exists('g:calendar_today')
-        exe "call " . g:calendar_today . "()"
-      endif
-    elseif navi == 'NextYear'
-      call calendar#show(b:CalendarDir, b:CalendarYear + 1, b:CalendarMonth)
-      call setpos('.', curp)
-      return
-    elseif navi == 'PrevYear'
-      call calendar#show(b:CalendarDir, b:CalendarYear - 1, b:CalendarMonth)
-      call setpos('.', curp)
-      return
-    else
-      let navi = ''
-    endif
-    if navi != ''
-      if g:calendar_focus_today == 1 && search("\\*\\d","w") > 0
-        silent execute "normal! gg/\\*\\d\<cr>"
-        return
-      else
-        if curl < line('$')/2
-          silent execute "normal! gg0/".navi."\<cr>"
-        else
-          silent execute "normal! G$?".navi."\<cr>"
-        endif
-        return
-      endif
-    endif
-  endif
 
   " if no action defined return
   if !exists("g:calendar_action") || g:calendar_action == ""
