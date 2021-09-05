@@ -59,8 +59,8 @@ endif
 if !exists("g:calendar_search_grepprg")
   let g:calendar_search_grepprg = "grep"
 endif
-if !exists("g:calendar_weeknum_wruler")
-  let g:calendar_weeknum_wruler = "WK"
+if !exists("g:calendar_wnmruler")
+  let g:calendar_wnmruler = "WK"
 endif
 if !exists("g:calendar_yearly_path_pattern")
   let g:calendar_yearly_path_pattern = '{YYYY}/README{EXT}'
@@ -662,7 +662,7 @@ function! calendar#show(...)
       let vwruler = strpart(vwruler,stridx(vwruler, ' ') + 1).' '.strpart(vwruler,0,stridx(vwruler, ' '))
     endif
     if exists('g:calendar_weeknm')
-      let vwruler = vwruler.' '.g:calendar_weeknum_wruler
+      let vwruler = vwruler.' '.g:calendar_wnmruler
     endif
     if dir == 2
       let whiteruler = substitute(substitute(whitehrz, ' ', '_', 'g'), '__', '  ', '')

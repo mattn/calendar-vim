@@ -151,6 +151,12 @@ Sunday: >
   let g:calendar_wruler = 'Su Mo Tu We Th Fr Sa'
 <
 
+                                               *g:calendar_wnmruler*
+To change the week number names for the calendar headings, set this variable.
+>
+  let g:calendar_wnmruler = 'WK'
+<
+
                                                 *g:calendar_monday*
 To make the week start on Monday rather than Sunday, set this variable.  Note
 that the value of |g:calendar_wruler| is not affected by this; it should
