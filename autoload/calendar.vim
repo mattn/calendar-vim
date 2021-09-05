@@ -62,14 +62,17 @@ endif
 if !exists("g:calendar_weeknum_wruler")
   let g:calendar_weeknum_wruler = "WK"
 endif
-if !exists("g:calendar_weekly_dirname")
-  let g:calendar_weekly_dirname = "week"
+if !exists("g:calendar_yearly_path_pattern")
+  let g:calendar_yearly_path_pattern = '{YYYY}/README{EXT}'
 endif
-if !exists("g:calendar_monthly_filename")
-  let g:calendar_monthly_filename = "README"
+if !exists("g:calendar_monthly_path_pattern")
+  let g:calendar_monthly_path_pattern = '{YYYY}/{MM}/README{EXT}'
 endif
-if !exists("g:calendar_yearly_filename")
-  let g:calendar_yearly_filename = "README"
+if !exists("g:calendar_weekly_path_pattern")
+  let g:calendar_weekly_path_pattern = '{YYYY}/week/{WW}{EXT}'
+endif
+if !exists("g:calendar_diary_path_pattern")
+  let g:calendar_diary_path_pattern = '{YYYY}/{MM}/{DD}{EXT}'
 endif
 
 "*****************************************************************
@@ -1253,28 +1256,48 @@ function! calendar#diary(day, month, year, week, dir)
   if a:year == 0 || a:month == 0 || a:day == 0
     return
   endif
-  call calendar#open(printf("%04d", a:year) . "/" . printf("%02d", a:month) . "/" . printf("%02d", a:day) . g:calendar_diary_extension)
+  let data = {
+        \ 'year': a:year,
+        \ 'month': a:month,
+        \ 'day': a:day,
+        \ }
+  let sfile = calendar#substitute_path_pattern(g:calendar_diary_path_pattern, data)
+  call calendar#open(sfile)
 endfunc
 
 function! calendar#week(weeknm, year)
   if a:year == 0 || a:weeknm == 0
     return
   endif
-  call calendar#open(printf("%04d", a:year) . "/" . g:calendar_weekly_dirname . "/" . printf("%02d", a:weeknm) . g:calendar_diary_extension)
+  let data = {
+        \ 'year': a:year,
+        \ 'weeknm': a:weeknm,
+        \ }
+  let sfile = calendar#substitute_path_pattern(g:calendar_weekly_path_pattern, data)
+  call calendar#open(sfile)
 endfunction
 
 function! calendar#month(month, year)
   if a:year == 0 || a:month == 0
     return
   endif
-  call calendar#open(printf("%04d", a:year) . "/" . printf("%02d", a:month) . "/" . g:calendar_monthly_filename . g:calendar_diary_extension)
+  let data = {
+        \ 'year': a:year,
+        \ 'month': a:month,
+        \ }
+  let sfile = calendar#substitute_path_pattern(g:calendar_monthly_path_pattern, data)
+  call calendar#open(sfile)
 endfunction
 
 function! calendar#year(year)
   if a:year == 0
     return
   endif
-  call calendar#open(printf("%04d", a:year) . "/" . g:calendar_yearly_filename . g:calendar_diary_extension)
+  let data = {
+        \ 'year': a:year,
+        \ }
+  let sfile = calendar#substitute_path_pattern(g:calendar_yearly_path_pattern, data)
+  call calendar#open(sfile)
 endfunction
 
 function! calendar#open(path)
@@ -1314,6 +1337,33 @@ function! calendar#open(path)
 endfunction
 
 
+function! calendar#substitute_path_pattern(pattern, data)
+  let path = a:pattern
+
+  if has_key(a:data, 'year')
+    const YYYY = printf("%04d", a:data['year'])
+    let path = substitute(path, '{YYYY}', YYYY, '')
+  endif
+  if has_key(a:data, 'month')
+    const MM = printf("%02d", a:data['month'])
+    let path = substitute(path, '{MM}', MM, '')
+  endif
+
+  if has_key(a:data, 'weeknm')
+    const WW = printf("%02d", a:data['weeknm'])
+    let path = substitute(path, '{WW}', WW, '')
+  endif
+  if has_key(a:data, 'day')
+    const DD = printf("%02d", a:data['day'])
+    let path = substitute(path, '{DD}', DD, '')
+  endif
+
+  const EXT = g:calendar_diary_extension
+  let path = substitute(path, '{EXT}', EXT, '')
+
+  return path
+endfunction
+
 "*****************************************************************
 "* sign : calendar sign function
 "*----------------------------------------------------------------
@@ -1322,12 +1372,21 @@ endfunction
 "*   year  : year of sign
 "*****************************************************************
 function! calendar#sign(day, month, year)
-  let sfile = g:calendar_diary."/".printf("%04d", a:year)."/".printf("%02d", a:month)."/".printf("%02d", a:day).g:calendar_diary_extension
+  let data = {
+        \ 'year': a:year,
+        \ 'month': a:month,
+        \ 'day': a:day,
+        \ }
+  let sfile = g:calendar_diary . "/" . calendar#substitute_path_pattern(g:calendar_diary_path_pattern, data)
   return filereadable(expand(sfile))
 endfunction
 
 function! calendar#weekNumberSign(weeknm, year)
-  let sfile = g:calendar_diary."/".printf("%04d", a:year)."/" . g:calendar_weekly_dirname . "/".printf("%02d", a:weeknm).g:calendar_diary_extension
+  let data = {
+        \ 'year': a:year,
+        \ 'weeknm': a:weeknm,
+        \ }
+  let sfile = g:calendar_diary . "/" . calendar#substitute_path_pattern(g:calendar_weekly_path_pattern, data)
   if filereadable(expand(sfile)) != 0
     return "+"
   endif
@@ -1335,7 +1394,11 @@ function! calendar#weekNumberSign(weeknm, year)
 endfunction
 
 function! calendar#monthSign(month, year)
-  let sfile = g:calendar_diary."/".printf("%04d", a:year)."/".printf("%02d", a:month)."/README".g:calendar_diary_extension
+  let data = {
+        \ 'year': a:year,
+        \ 'month': a:month,
+        \ }
+  let sfile = g:calendar_diary . "/" . calendar#substitute_path_pattern(g:calendar_monthly_path_pattern, data)
   if filereadable(expand(sfile)) != 0
     return "+"
   endif
@@ -1343,7 +1406,10 @@ function! calendar#monthSign(month, year)
 endfunction
 
 function! calendar#yearSign(year)
-  let sfile = g:calendar_diary."/".printf("%04d", a:year)."/README".g:calendar_diary_extension
+  let data = {
+        \ 'year': a:year,
+        \ }
+  let sfile = g:calendar_diary . "/" . calendar#substitute_path_pattern(g:calendar_yearly_path_pattern, data)
   if filereadable(expand(sfile)) != 0
     return "+"
   endif

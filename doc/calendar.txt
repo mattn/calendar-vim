@@ -192,14 +192,21 @@ using system default grep program. If you want use Vim internal grep command
   let g:calendar_search_grepprg = 'internal'
 <
 
-                                                *g:ccalendar_weekly_dirname*
-To set the weekly directory name. default is 'week'.
+                                           *g:calendar_diary_path_pattern*
+To set the diary file path pattern. default is '{YYYY}/{MM}/{DD}{EXT}'.
 
-                                                *g:ccalendar_monthly_filename*
-To set the monthly file name. default is 'README'.
 
-                                                *g:ccalendar_yearly_filename*
-To set the yearly file name. default is 'README'.
+                                           *g:calendar_weekly_path_pattern*
+To set the weekly file path pattern. default is '{YYYY}/week/{WW}{EXT}'.
+
+
+                                           *g:calendar_monthly_path_pattern*
+To set the monthly file path pattern. default is '{YYYY}/{MM}/README{EXT}'.
+
+
+                                             *g:calendar_yearly_path_pattern*
+To set the yearly file path pattern. default is '{YYYY}/README{EXT}'.
+
 
 HOOKS                                           *calendar-hooks*
 
