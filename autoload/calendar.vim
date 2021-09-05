@@ -178,12 +178,17 @@ function! calendar#action(...)
     endwhile
   endif
 
-  " for year and month.
-  if text =~ '[ ]*+\?\d\+\/+\?\d\+([^)]*)'
+  " for year and month header.
+  if (g:calendar_mark == 'right' && text =~ '[ ]*\d\++\?\/\d\++\?([^)]*)') ||
+        \ text =~ '[ ]*+\?\d\+\/+\?\d\+([^)]*)'
     let slashIdx = stridx(text, "/")
     let curCol = col(".") - 1
     let hyear  = matchstr(text, '\d\{4,}')
-    let hmonth = matchstr(substitute(text, '[ ]*+\?\d*\/+\?\(\d\d\=\).*', '\1', ""), '[^0].*')
+    if g:calendar_mark == 'right'
+      let hmonth = matchstr(substitute(text, '[ ]*\d*+\?\/\(\d\d\=\)+\?.*', '\1', ""), '[^0].*')
+    else
+      let hmonth = matchstr(substitute(text, '[ ]*+\?\d*\/+\?\(\d\d\=\).*', '\1', ""), '[^0].*')
+    endif
     if (curCol == slashIdx)
       return
     elseif (curCol < slashIdx)
@@ -611,23 +616,33 @@ function! calendar#show(...)
     "--------------------------------------------------------------
     " build header
     let vysign = calendar#yearSign(vyear)
+    let vysignLeft = vysign
+    let vysignRight = ''
     let vmsign = calendar#monthSign(vmnth, vyear)
+    let vmsignLeft = vmsign
+    let vmsignRight = ''
+    if g:calendar_mark == 'right'
+    let vysignLeft = ''
+    let vysignRight = vysign
+    let vmsignLeft = ''
+    let vmsignRight = vmsign
+    endif
     if exists('g:calendar_erafmt') && g:calendar_erafmt !~ "^\s*$"
       if g:calendar_erafmt =~ '.*,[+-]*\d\+'
         let veranum = substitute(g:calendar_erafmt,'.*,\([+-]*\d\+\)','\1','')
         if vyear+veranum > 0
           let vdisplay2 = substitute(g:calendar_erafmt,'\(.*\),.*','\1','')
-          let vdisplay2 = vdisplay2.vysign.(vyear+veranum).'/'..vmsign.vmnth.'('
+          let vdisplay2 = vdisplay2.vysignLeft.(vyear+veranum).vysignRight.'/'..vmsignLeft.vmnth.vmsignRight.'('
         else
-          let vdisplay2 = vysign.vyear.'/'.vmsign.vmnth.'('
+          let vdisplay2 = vysignLeft.vyear.vysignRight.'/'.vmsignLeft.vmnth.vmsignRight.'('
         endif
       else
-        let vdisplay2 = vysign.vyear.'/'.vmsign.vmnth.'('
+        let vdisplay2 = vysignLeft.vyear.vysignRight.'/'.vmsignLeft.vmnth.vmsignRight.'('
       endif
       let vdisplay2 = strpart("                           ",
         \ 1,(vcolumn-strlen(vdisplay2))/2-2).vdisplay2
     else
-      let vdisplay2 = vysign.vyear.'/'.vmsign.vmnth.'('
+      let vdisplay2 = vysignLeft.vyear.vysignRight.'/'.vmsignLeft.vmnth.vmsignRight.'('
       let vdisplay2 = strpart("                           ",
         \ 1,(vcolumn-strlen(vdisplay2))/2-2).vdisplay2
     endif
@@ -1115,9 +1130,17 @@ function! calendar#show(...)
   " header
   " syn match CalHeader display "[^ ]*+\?\d\+\/+\?\d\+([^)]*)"
   syn match CalHeaderYear display "[^ ]*\d\{4,}\/"
-  syn match CalHeaderSignYear display "[^ ]*+\d\{4,}"
+  if g:calendar_mark == 'right'
+    syn match CalHeaderSignYear display "[^ ]*\d\{4,}+/"
+  else
+    syn match CalHeaderSignYear display "[^ ]*+\d\{4,}/"
+  endif
   syn match CalHeaderMonth display "\d\+([^)]*)"
-  syn match CalHeaderSignMonth display "+\d\+([^)]*)"
+  if g:calendar_mark == 'right'
+    syn match CalHeaderSignMonth display "\d\++([^)]*)"
+  else
+    syn match CalHeaderSignMonth display "+\d\+([^)]*)"
+  endif
 
   " navi
   if exists('g:calendar_navi')
@@ -1227,18 +1250,30 @@ endfunc
 "*   year  : year you actioned
 "*****************************************************************
 function! calendar#diary(day, month, year, week, dir)
+  if a:year == 0 || a:month == 0 || a:day == 0
+    return
+  endif
   call calendar#open(printf("%04d", a:year) . "/" . printf("%02d", a:month) . "/" . printf("%02d", a:day) . g:calendar_diary_extension)
 endfunc
 
 function! calendar#week(weeknm, year)
+  if a:year == 0 || a:weeknm == 0
+    return
+  endif
   call calendar#open(printf("%04d", a:year) . "/" . g:calendar_weekly_dirname . "/" . printf("%02d", a:weeknm) . g:calendar_diary_extension)
 endfunction
 
 function! calendar#month(month, year)
+  if a:year == 0 || a:month == 0
+    return
+  endif
   call calendar#open(printf("%04d", a:year) . "/" . printf("%02d", a:month) . "/" . g:calendar_monthly_filename . g:calendar_diary_extension)
 endfunction
 
 function! calendar#year(year)
+  if a:year == 0
+    return
+  endif
   call calendar#open(printf("%04d", a:year) . "/" . g:calendar_yearly_filename . g:calendar_diary_extension)
 endfunction
 
