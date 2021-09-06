@@ -217,6 +217,8 @@ command! -nargs=* CalendarVR  call calendar#show(3,<f-args>)
 command! -nargs=* CalendarH call calendar#show(1,<f-args>)
 command! -nargs=* CalendarT call calendar#show(2,<f-args>)
 
+command! -nargs=* CalendarSearch call calendar#search("<args>")
+
 if !get(g:, 'calendar_no_mappings', 0)
   if !hasmapto('<Plug>CalendarV')
     nmap <unique> <Leader>cal <Plug>CalendarV
