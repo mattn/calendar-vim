@@ -24,8 +24,7 @@ if !exists("g:calendar_diary_list_curr_idx")
   let g:calendar_diary_list_curr_idx = 0
 endif
 if !exists("g:calendar_diary")
-  let diary_list_len = len(g:calendar_diary_list)
-  if exists("g:calendar_diary_list") && diary_list_len > 0 && g:calendar_diary_list_curr_idx >= 0 && g:calendar_diary_list_curr_idx < diary_list_len
+  if exists("g:calendar_diary_list") && len(g:calendar_diary_list) > 0 && g:calendar_diary_list_curr_idx >= 0 && g:calendar_diary_list_curr_idx < len(g:calendar_diary_list)
     let g:calendar_diary = g:calendar_diary_list[g:calendar_diary_list_curr_idx].path
     let g:calendar_diary_extension = g:calendar_diary_list[g:calendar_diary_list_curr_idx].ext
   else
