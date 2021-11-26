@@ -175,7 +175,19 @@ function! calendar#action(...)
   elseif b:CalendarDir == 2
     let dir = 'T'
     let cnr = 1
-    let week = ((col(".")+1) / 3) - 1
+    "let week = ((col(".")+1) / 3) - 1
+    if !exists('b:CalendarDir') && !(bufname('%') == '' && &l:modified == 0)
+      let width = &columns
+      let height = &lines - 2
+    else
+      let width = winwidth(0)
+      let height = winheight(0)
+      echo width height
+    endif
+    let rene_d = (width - 5) / 8
+    let rene_r = (width - 7 * rene_d - 3) / 2 
+    let rene_l = rene_r + 3
+    let week = (col(".") - rene_l) / rene_d
   endif
   let lnr = 1
   let hdr = 1
