@@ -64,8 +64,16 @@ Disable standard mappings:
   let g:calendar_no_mappings=0
 
                                                 *g:calendar_focus_today*
+Deprecated. please use |g:calendar_focus_type| instead.
+
 Keeps focus when moving to next or previous calendar: >
   let g:calendar_focus_today = 1
+<
+                                                 *g:calendar_focus_type*
+Set cursor focus type when moving to next or previous calendar: >
+  let g:calendar_focus_type = 'today'  " keep cursor on the date of today.
+  let g:calendar_focus_type = 'cursor' " keep cursor on the last cursor pos.
+  let g:calendar_focus_type = 'default' " keep cursor on the navigator.
 <
 
                                                 *g:calendar_keys*
@@ -143,6 +151,12 @@ Sunday: >
   let g:calendar_wruler = 'Su Mo Tu We Th Fr Sa'
 <
 
+                                               *g:calendar_wnmruler*
+To change the week number names for the calendar headings, set this variable.
+>
+  let g:calendar_wnmruler = 'WK'
+<
+
                                                 *g:calendar_monday*
 To make the week start on Monday rather than Sunday, set this variable.  Note
 that the value of |g:calendar_wruler| is not affected by this; it should
@@ -157,6 +171,7 @@ To show the week number, set this variable.  There are four valid settings: >
   let g:calendar_weeknm = 3 " KW01
   let g:calendar_weeknm = 4 " KW 1
   let g:calendar_weeknm = 5 " 1
+  let g:calendar_weeknm = 6 " W01
 <
 
                                                 *g:calendar_datetime*
@@ -182,6 +197,22 @@ using system default grep program. If you want use Vim internal grep command
 |:vimgrep|, set value to 'internal'. >
   let g:calendar_search_grepprg = 'internal'
 <
+
+                                           *g:calendar_diary_path_pattern*
+To set the diary file path pattern. default is '{YYYY}/{MM}/{DD}{EXT}'.
+
+
+                                           *g:calendar_weekly_path_pattern*
+To set the weekly file path pattern. default is '{YYYY}/week/{WW}{EXT}'.
+
+
+                                           *g:calendar_monthly_path_pattern*
+To set the monthly file path pattern. default is '{YYYY}/{MM}/README{EXT}'.
+
+
+                                             *g:calendar_yearly_path_pattern*
+To set the yearly file path pattern. default is '{YYYY}/README{EXT}'.
+
 
 HOOKS                                           *calendar-hooks*
 
