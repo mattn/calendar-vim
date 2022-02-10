@@ -42,7 +42,7 @@ if !exists("g:calendar_datetime")
 endif
 if !exists("g:calendar_options")
   let g:calendar_options = "fdc=0 nonu"
-  if has("+relativenumber")
+  if has("+relativenumber") || exists("+relativenumber")
     let g:calendar_options .= " nornu"
   endif
 endif
@@ -906,7 +906,7 @@ function! calendar#show(...)
     setlocal bufhidden=delete
     silent! exe "setlocal " . g:calendar_options
     let nontext_columns = &foldcolumn + &nu * &numberwidth
-    if has("+relativenumber")
+    if has("+relativenumber") || exists("+relativenumber")
       let nontext_columns += &rnu * &numberwidth
     endif
     " Without this, the 'sidescrolloff' setting may cause the left side of the
