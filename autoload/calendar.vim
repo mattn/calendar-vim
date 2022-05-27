@@ -55,6 +55,9 @@ endif
 if !exists("g:calendar_search_grepprg")
   let g:calendar_search_grepprg = "grep"
 endif
+if !exists("g:calendar_diary_filename_pat")
+  let g:calendar_diary_filename_pat = "%04d/%02d/%02d"
+endif
 
 "*****************************************************************
 "* Default Calendar key bindings
@@ -1078,6 +1081,40 @@ function! s:make_dir(dir)
 endfunc
 
 "*****************************************************************
+"* ensure_parent_dir: ensure parent_folder for path
+"*----------------------------------------------------------------
+"*   basedir: initial parent(e.g. '/home')
+"*   file_path: target file path inside basedir (e.g 'a/b.md')
+"*****************************************************************
+function! s:ensure_parent_dir(basedir, file_path)
+    let parent = a:basedir
+    for child in split(a:file_path, '/')[:-2]
+        let parent = parent . '/' . child
+        if isdirectory(parent) == 0
+            if s:make_dir(parent) != 0
+              return 0
+            endif
+        endif
+    endfor
+    return 1
+endfunc
+
+"*****************************************************************
+"* gen_date_file_path(day, month, year)
+"*----------------------------------------------------------------
+"*   day   : day you actioned
+"*   month : month you actioned
+"*   year  : year you actioned
+"*****************************************************************
+function! s:gen_date_file_path(day, month, year)
+    if exists('g:calendar_diary_filename_pat_fn')
+        return call(g:calendar_diary_filename_pat_fn, [a:year, a:month, a:day], {'year': a:year, 'month': a:month, 'day': a:day})
+    else
+        return printf(g:calendar_diary_filename_pat, a:year, a:month, a:day)
+    endif
+endfunc
+
+"*****************************************************************
 "* diary : calendar hook function
 "*----------------------------------------------------------------
 "*   day   : day you actioned
@@ -1086,24 +1123,20 @@ endfunc
 "*****************************************************************
 function! calendar#diary(day, month, year, week, dir)
   " build the file name and create directories as needed
-  if !isdirectory(expand(g:calendar_diary))
+  let basedir = expand(g:calendar_diary)
+
+  if !isdirectory(basedir)
     call confirm("please create diary directory : ".g:calendar_diary, 'OK')
     return
   endif
-  let sfile = expand(g:calendar_diary) . "/" . printf("%04d", a:year)
-  if isdirectory(sfile) == 0
-    if s:make_dir(sfile) != 0
+
+  let file_path = s:gen_date_file_path(a:day, a:month, a:year) . g:calendar_diary_extension
+  let file_path = substitute(file_path, ' ', '\\ ', 'g')
+  if s:ensure_parent_dir(basedir, file_path) == 0
       return
-    endif
   endif
-  let sfile = sfile . "/" . printf("%02d", a:month)
-  if isdirectory(sfile) == 0
-    if s:make_dir(sfile) != 0
-      return
-    endif
-  endif
-  let sfile = expand(sfile) . "/" . printf("%02d", a:day) . g:calendar_diary_extension
-  let sfile = substitute(sfile, ' ', '\\ ', 'g')
+
+  let sfile = basedir . '/' . file_path
   let vbufnr = bufnr('__Calendar')
 
   " load the file
@@ -1124,7 +1157,8 @@ endfunc
 "*   year  : year of sign
 "*****************************************************************
 function! calendar#sign(day, month, year)
-  let sfile = g:calendar_diary."/".printf("%04d", a:year)."/".printf("%02d", a:month)."/".printf("%02d", a:day).g:calendar_diary_extension
+  let file_path = s:gen_date_file_path(a:day, a:month, a:year) . g:calendar_diary_extension
+  let sfile = g:calendar_diary."/".file_path
   return filereadable(expand(sfile))
 endfunction
 

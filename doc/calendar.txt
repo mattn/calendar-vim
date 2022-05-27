@@ -158,6 +158,21 @@ To show the week number, set this variable.  There are four valid settings: >
   let g:calendar_weeknm = 4 " KW 1
   let g:calendar_weeknm = 5 " 1
 <
+                                                *g:calendar_diary_filename_pat*
+Give year, month, day, controls the filename of diary format. It defaults to
+'%04d/%02d/%02d" which generates filename like '2022/12/23'. >
+  let g:calendar_diary_filename_pat = '%04d/%02d/%02d'
+<
+
+                                                *g:calendar_diary_filename_pat_fn*
+The name of the function that could be used to generate diary filename if
+present. Otherwise |g:calendar_diary_filename_pat| will be used. Not defined by
+default. >
+    function g:DiaryName(year, month, day)
+        return printf('%04d-%02d-%02d', a:year, a:month, a:day)
+    endfunction
+    let g:calendar_diary_filename_pat_fn = 'g:DiaryName'
+<
 
                                                 *g:calendar_datetime*
 To control display of the current date and time, set this variable.
