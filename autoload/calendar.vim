@@ -1062,7 +1062,7 @@ endfunction
 "*****************************************************************
 function! s:make_dir(dir)
   if(has("unix"))
-    call system("mkdir " . a:dir)
+    call system("mkdir \"" . a:dir . "\"")
     let rc = v:shell_error
   elseif(has("win16") || has("win32") || has("win95") ||
               \has("dos16") || has("dos32") || has("os2"))
