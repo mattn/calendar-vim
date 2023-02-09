@@ -1061,12 +1061,13 @@ endfunction
 "*   dir : directory
 "*****************************************************************
 function! s:make_dir(dir)
-  if(has("unix"))
-    call system("mkdir " . a:dir)
-    let rc = v:shell_error
-  elseif(has("win16") || has("win32") || has("win95") ||
-              \has("dos16") || has("dos32") || has("os2"))
-    call system("mkdir \"" . a:dir . "\"")
+  if exists("*mkdir")
+    " mkdir() success return 1, else return 0
+    let rc = !mkdir(a:dir, "p")
+  elseif has("unix") ||
+        \has("win16") || has("win32") || has("win95") ||
+        \has("dos16") || has("dos32") || has("os2")
+    call system("mkdir " . fnameescape(a:dir))
     let rc = v:shell_error
   else
     let rc = 1
