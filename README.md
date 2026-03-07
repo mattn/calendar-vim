@@ -53,3 +53,13 @@ For full documentation, install the plugin and run `:help calendar` from within
 Vim.
 
 [1]: https://github.com/tpope/vim-pathogen
+
+License
+-------
+
+MIT
+
+Author
+------
+
+Yasuhiro Matsumoto (a.k.a. mattn)
