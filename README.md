@@ -40,7 +40,7 @@ window:
 
     :CalendarH
 
-Bring up a full-screen:
+Bring up a full-screen calendar:
 
     :CalendarT
 

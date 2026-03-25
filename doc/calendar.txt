@@ -34,7 +34,7 @@ calendar.vim makes the following commands available:
 
                                                 *calendar-:CalendarVR*
 :CalendarVR [[year] month]  Show calendar at this year and this month in a
-                          vertical split at the right site.  When [year] is
+                          vertical split at the right side.  When [year] is
                           omitted, the calendar will show the given month in
                           the current year.  When both [year] and [month] are
                           omitted, the calendar will show the current month.
@@ -124,9 +124,9 @@ language, use this variable.  Entries should be comma separated. >
 
                                                 *g:calendar_erafmt*
 To change the dating system, set the following variable.  Include the name of
-the dating system and its offset from the Georgian calendar (A.D.).  For
-example, to use the current Japanese era (Heisei), you would set: >
-  let g:calendar_erafmt = 'Heisei,-1988'
+the dating system and its offset from the Gregorian calendar (A.D.).  For
+example, to use the current Japanese era (Reiwa), you would set: >
+  let g:calendar_erafmt = 'Reiwa,-2018'
 <
 
                                                 *g:calendar_mruler*
@@ -164,6 +164,18 @@ To control display of the current date and time, set this variable.
 Acceptable values are 'title', 'statusline', and '': >
   let g:calendar_datetime = 'title'
 <
+                                                *g:calendar_options*
+To set the local options for the calendar window, set this variable.  The
+default value is 'fdc=0 nonu nornu': >
+  let g:calendar_options = 'fdc=0 nonu nornu'
+<
+
+                                                *g:calendar_diary_extension*
+To set the file extension for diary files, set this variable.  The default
+value is '.md': >
+  let g:calendar_diary_extension = '.md'
+<
+
                                                 *g:calendar_filetype*
 To control the filetype of calendar entries, set this variable. It defaults to
 'markdown'. Acceptable values are values that are acceptable for |filetype|
