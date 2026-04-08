@@ -1018,6 +1018,12 @@ function! s:CalendarHelp() abort
 endfunction
 
 function! calendar#search(keyword) abort
+  if !isdirectory(expand(g:calendar_diary))
+    echohl WarningMsg
+    echo "calendar diary directory not found: " . g:calendar_diary
+    echohl None
+    return
+  endif
   if g:calendar_search_grepprg == "internal"
     exe "vimgrep /" . a:keyword."/" . escape(g:calendar_diary," ") . "/**/*" . g:calendar_diary_extension . "|cw"
   else
