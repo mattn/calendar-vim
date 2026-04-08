@@ -1,28 +1,16 @@
-if !exists("g:calendar_action")
-  let g:calendar_action = "calendar#diary"
-endif
-if !exists("g:calendar_sign")
-  let g:calendar_sign = "calendar#sign"
-endif
-if !exists("g:calendar_mark")
- \|| (g:calendar_mark != 'left'
- \&& g:calendar_mark != 'left-fit'
- \&& g:calendar_mark != 'right')
+let g:calendar_action = get(g:, 'calendar_action', 'calendar#diary')
+let g:calendar_sign = get(g:, 'calendar_sign', 'calendar#sign')
+
+if index(['left', 'left-fit', 'right'], get(g:, 'calendar_mark', '')) < 0
   let g:calendar_mark = 'left'
 endif
-if !exists("g:calendar_navi")
- \|| (g:calendar_navi != 'top'
- \&& g:calendar_navi != 'bottom'
- \&& g:calendar_navi != 'both'
- \&& g:calendar_navi != '')
+if index(['top', 'bottom', 'both', ''], get(g:, 'calendar_navi', '!')) < 0
   let g:calendar_navi = 'top'
 endif
-if !exists("g:calendar_navi_label")
-  let g:calendar_navi_label = "Prev,Today,Next"
-endif
-if !exists("g:calendar_diary_list_curr_idx")
-  let g:calendar_diary_list_curr_idx = 0
-endif
+
+let g:calendar_navi_label = get(g:, 'calendar_navi_label', 'Prev,Today,Next')
+let g:calendar_diary_list_curr_idx = get(g:, 'calendar_diary_list_curr_idx', 0)
+
 if !exists("g:calendar_diary")
   if exists("g:calendar_diary_list") && len(g:calendar_diary_list) > 0 && g:calendar_diary_list_curr_idx >= 0 && g:calendar_diary_list_curr_idx < len(g:calendar_diary_list)
     let g:calendar_diary = g:calendar_diary_list[g:calendar_diary_list_curr_idx].path
@@ -31,30 +19,30 @@ if !exists("g:calendar_diary")
     let g:calendar_diary = "~/diary"
   endif
 endif
-if !exists("g:calendar_focus_today")
-  let g:calendar_focus_today = 0
-endif
-if !exists("g:calendar_datetime")
- \|| (g:calendar_datetime != ''
- \&& g:calendar_datetime != 'title'
- \&& g:calendar_datetime != 'statusline')
+
+let g:calendar_focus_today = get(g:, 'calendar_focus_today', 0)
+
+if index(['', 'title', 'statusline'], get(g:, 'calendar_datetime', '!')) < 0
   let g:calendar_datetime = 'title'
 endif
+
 if !exists("g:calendar_options")
   let g:calendar_options = "fdc=0 nonu"
   if has("+relativenumber") || exists("+relativenumber")
     let g:calendar_options .= " nornu"
   endif
 endif
-if !exists("g:calendar_filetype")
-  let g:calendar_filetype = "markdown"
-endif
-if !exists("g:calendar_diary_extension")
-    let g:calendar_diary_extension = ".md"
-endif
-if !exists("g:calendar_search_grepprg")
-  let g:calendar_search_grepprg = "grep"
-endif
+
+let g:calendar_filetype = get(g:, 'calendar_filetype', 'markdown')
+let g:calendar_diary_extension = get(g:, 'calendar_diary_extension', '.md')
+let g:calendar_search_grepprg = get(g:, 'calendar_search_grepprg', 'grep')
+"*****************************************************************
+"* Month data: [days, day-of-year offset, short name]
+"*****************************************************************
+let s:month_days   = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+let s:month_params = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]
+let s:month_names  = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                     \ 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 "*****************************************************************
 "* Default Calendar key bindings
@@ -81,6 +69,18 @@ end
 "*****************************************************************
 function! calendar#close(...) abort
   bw!
+endfunction
+
+"*****************************************************************
+"* format_weeknm : format week number string
+"*****************************************************************
+function! s:format_weeknm(weeknm, viweek) abort
+  let l:prefix = (a:weeknm <= 2) ? 'WK' : (a:weeknm <= 4) ? 'KW' : ''
+  if a:weeknm == 5
+    return printf('%2d', a:viweek)
+  endif
+  let l:fmt = (a:weeknm % 2 == 1) ? '%02d' : '%2d'
+  return l:prefix . printf(l:fmt, a:viweek)
 endfunction
 
 "*****************************************************************
@@ -302,16 +302,8 @@ function! calendar#show(...) abort
       let l:width = winwidth(0)
       let l:height = winheight(0)
     endif
-    let l:hrz = l:width / 8 - 5
-    if l:hrz < 0
-      let l:hrz = 0
-    endif
-    let l:h = 0
-    while l:h < l:hrz
-      let l:whitehrz = l:whitehrz.' '
-      let l:h = l:h + 1
-    endwhile
-    let l:whitehrz = l:whitehrz.'|'
+    let l:hrz = max([l:width / 8 - 5, 0])
+    let l:whitehrz = repeat(' ', l:hrz) . '|'
     let l:navifix = (exists('g:calendar_navi') && g:calendar_navi == 'both') * 2
     let l:vrt = (l:height - &cmdheight - 3 - l:navifix) / 6 - 2
     if l:vrt < 0
@@ -322,32 +314,12 @@ function! calendar#show(...) abort
     else
       let l:whitevrta = l:whitehrz[1:]
     endif
-    let l:h = 0
     let l:leftmargin = (l:width - (strlen(l:whitehrz) + 3) * 7 - 1) / 2
-    let l:whiteleft = ''
-    while l:h < l:leftmargin
-      let l:whiteleft = l:whiteleft.' '
-      let l:h = l:h + 1
-    endwhile
-    let l:h = 0
-    let l:whitevrt = ''
-    while l:h < l:vrt
-      let l:whitevrt = l:whitevrt."\n".l:whiteleft.'|'
-      let l:i = 0
-      while l:i < 7
-        let l:whitevrt = l:whitevrt.'   '.l:whitehrz
-        let l:i = l:i + 1
-      endwhile
-      let l:h = l:h + 1
-    endwhile
-    let l:whitevrt = l:whitevrt."\n"
-    let l:whitevrt2 = l:whiteleft.'+'
-    let l:h = 0
+    let l:whiteleft = repeat(' ', l:leftmargin)
+    let l:vrt_row = "\n" . l:whiteleft . '|' . repeat('   ' . l:whitehrz, 7)
+    let l:whitevrt = repeat(l:vrt_row, l:vrt) . "\n"
     let l:borderhrz = '---'.substitute(substitute(l:whitehrz, ' ', '-', 'g'), '|', '+', '')
-    while l:h < 7
-      let l:whitevrt2 = l:whitevrt2.l:borderhrz
-      let l:h = l:h + 1
-    endwhile
+    let l:whitevrt2 = l:whiteleft . '+' . repeat(l:borderhrz, 7)
     let l:whitevrtweeknm = l:whitevrt.l:whitevrt2."\n"
     let l:whitevrt = l:whitevrta.l:whitevrt.l:whitevrt2."\n"
     let l:fridaycol = (strlen(l:whitehrz) + 3) * 5 + strlen(l:whiteleft) + 1
@@ -361,72 +333,15 @@ function! calendar#show(...) abort
     "--------------------------------------------------------------
     "--- calculating
     "--------------------------------------------------------------
-    if l:vmnth == 1
-      let l:vmdays = 31
-      let l:vparam = 1
-      let l:vsmnth = 'Jan'
-    elseif l:vmnth == 2
-      let l:vmdays = 28
-      let l:vparam = 32
-      let l:vsmnth = 'Feb'
-    elseif l:vmnth == 3
-      let l:vmdays = 31
-      let l:vparam = 60
-      let l:vsmnth = 'Mar'
-    elseif l:vmnth == 4
-      let l:vmdays = 30
-      let l:vparam = 91
-      let l:vsmnth = 'Apr'
-    elseif l:vmnth == 5
-      let l:vmdays = 31
-      let l:vparam = 121
-      let l:vsmnth = 'May'
-    elseif l:vmnth == 6
-      let l:vmdays = 30
-      let l:vparam = 152
-      let l:vsmnth = 'Jun'
-    elseif l:vmnth == 7
-      let l:vmdays = 31
-      let l:vparam = 182
-      let l:vsmnth = 'Jul'
-    elseif l:vmnth == 8
-      let l:vmdays = 31
-      let l:vparam = 213
-      let l:vsmnth = 'Aug'
-    elseif l:vmnth == 9
-      let l:vmdays = 30
-      let l:vparam = 244
-      let l:vsmnth = 'Sep'
-    elseif l:vmnth == 10
-      let l:vmdays = 31
-      let l:vparam = 274
-      let l:vsmnth = 'Oct'
-    elseif l:vmnth == 11
-      let l:vmdays = 30
-      let l:vparam = 305
-      let l:vsmnth = 'Nov'
-    elseif l:vmnth == 12
-      let l:vmdays = 31
-      let l:vparam = 335
-      let l:vsmnth = 'Dec'
-    else
+    if l:vmnth < 1 || l:vmnth > 12
       echo 'Invalid Year or Month'
       return
     endif
-    let l:vleap = 0
-    if l:vyear % 400 == 0
-      let l:vleap = 1
-      if l:vmnth == 2
-        let l:vmdays = 29
-      elseif l:vmnth >= 3
-        let l:vparam = l:vparam + 1
-      endif
-    elseif l:vyear % 100 == 0
-      if l:vmnth == 2
-        let l:vmdays = 28
-      endif
-    elseif l:vyear % 4 == 0
-      let l:vleap = 1
+    let l:vmdays = s:month_days[l:vmnth - 1]
+    let l:vparam = s:month_params[l:vmnth - 1]
+    let l:vsmnth = s:month_names[l:vmnth - 1]
+    let l:vleap = (l:vyear % 4 == 0 && l:vyear % 100 != 0) || l:vyear % 400 == 0
+    if l:vleap
       if l:vmnth == 2
         let l:vmdays = 29
       elseif l:vmnth >= 3
@@ -492,30 +407,19 @@ function! calendar#show(...) abort
     "--------------------------------------------------------------
     "--- displaying
     "--------------------------------------------------------------
+    let l:vdisplay2 = l:vyear.'/'.l:vmnth.'('
     if exists('g:calendar_erafmt') && g:calendar_erafmt !~ "^\s*$"
-      if g:calendar_erafmt =~ '.*,[+-]*\d\+'
-        let l:veranum = substitute(g:calendar_erafmt,'.*,\([+-]*\d\+\)','\1','')
-        if l:vyear+l:veranum > 0
-          let l:vdisplay2 = substitute(g:calendar_erafmt,'\(.*\),.*','\1','')
-          let l:vdisplay2 = l:vdisplay2.(l:vyear+l:veranum).'/'.l:vmnth.'('
-        else
-          let l:vdisplay2 = l:vyear.'/'.l:vmnth.'('
-        endif
-      else
-        let l:vdisplay2 = l:vyear.'/'.l:vmnth.'('
+          \ && g:calendar_erafmt =~ '.*,[+-]*\d\+'
+      let l:veranum = substitute(g:calendar_erafmt,'.*,\([+-]*\d\+\)','\1','')
+      if l:vyear+l:veranum > 0
+        let l:vdisplay2 = substitute(g:calendar_erafmt,'\(.*\),.*','\1','')
+              \ .(l:vyear+l:veranum).'/'.l:vmnth.'('
       endif
-      let l:vdisplay2 = strpart("                           ",
-        \ 1,(l:vcolumn-strlen(l:vdisplay2))/2-2).l:vdisplay2
-    else
-      let l:vdisplay2 = l:vyear.'/'.l:vmnth.'('
-      let l:vdisplay2 = strpart("                           ",
-        \ 1,(l:vcolumn-strlen(l:vdisplay2))/2-2).l:vdisplay2
     endif
-    if exists('g:calendar_mruler') && g:calendar_mruler !~ "^\s*$"
-      let l:vdisplay2 = l:vdisplay2 . get(split(g:calendar_mruler, ','), l:vmnth-1, '').')'."\n"
-    else
-      let l:vdisplay2 = l:vdisplay2 . l:vsmnth.')'."\n"
-    endif
+    let l:vdisplay2 = repeat(' ', max([(l:vcolumn-strlen(l:vdisplay2))/2-2, 0])).l:vdisplay2
+    let l:mname = (exists('g:calendar_mruler') && g:calendar_mruler !~ "^\s*$")
+          \ ? get(split(g:calendar_mruler, ','), l:vmnth-1, '') : l:vsmnth
+    let l:vdisplay2 = l:vdisplay2 . l:mname . ')' . "\n"
     let l:vwruler = "Su Mo Tu We Th Fr Sa"
     if exists('g:calendar_wruler') && g:calendar_wruler !~ "^\s*$"
       let l:vwruler = g:calendar_wruler
@@ -556,16 +460,7 @@ function! calendar#show(...) abort
           let l:vdisplay2 = l:vdisplay2.l:whiteleft.'|'
         endif
       endif
-      if l:vmnth < 10
-         let l:vtarget = l:vyear."0".l:vmnth
-      else
-         let l:vtarget = l:vyear.l:vmnth
-      endif
-      if l:vdaycur < 10
-         let l:vtarget = l:vtarget."0".l:vdaycur
-      else
-         let l:vtarget = l:vtarget.l:vdaycur
-      endif
+      let l:vtarget = printf('%d%02d%02d', l:vyear, l:vmnth, l:vdaycur)
       if exists("g:calendar_sign") && g:calendar_sign != ""
         exe "let l:vsign = " . g:calendar_sign . "(l:vdaycur, l:vmnth, l:vyear)"
         if l:vsign != ""
@@ -621,27 +516,7 @@ function! calendar#show(...) abort
           if g:calendar_mark != 'right'
             let l:vdisplay2 = l:vdisplay2.' '
           endif
-          if l:viweek < 10
-            if g:calendar_weeknm == 1
-              let l:vdisplay2 = l:vdisplay2.'WK0'.l:viweek
-            elseif g:calendar_weeknm == 2
-              let l:vdisplay2 = l:vdisplay2.'WK '.l:viweek
-            elseif g:calendar_weeknm == 3
-              let l:vdisplay2 = l:vdisplay2.'KW0'.l:viweek
-            elseif g:calendar_weeknm == 4
-              let l:vdisplay2 = l:vdisplay2.'KW '.l:viweek
-            elseif g:calendar_weeknm == 5
-              let l:vdisplay2 = l:vdisplay2.' '.l:viweek
-            endif
-          else
-            if g:calendar_weeknm <= 2
-              let l:vdisplay2 = l:vdisplay2.'WK'.l:viweek
-            elseif g:calendar_weeknm == 3 || g:calendar_weeknm == 4
-              let l:vdisplay2 = l:vdisplay2.'KW'.l:viweek
-            elseif g:calendar_weeknm == 5
-              let l:vdisplay2 = l:vdisplay2.l:viweek
-            endif
-          endif
+          let l:vdisplay2 = l:vdisplay2 . s:format_weeknm(g:calendar_weeknm, l:viweek)
           let l:viweek = l:viweek + 1
 
           if l:viweek > l:vfweekl
@@ -672,27 +547,7 @@ function! calendar#show(...) abort
         if g:calendar_mark != 'right'
           let l:vdisplay2 = l:vdisplay2.' '
         endif
-        if l:viweek < 10
-          if g:calendar_weeknm == 1
-            let l:vdisplay2 = l:vdisplay2.'WK0'.l:viweek
-          elseif g:calendar_weeknm == 2
-            let l:vdisplay2 = l:vdisplay2.'WK '.l:viweek
-          elseif g:calendar_weeknm == 3
-            let l:vdisplay2 = l:vdisplay2.'KW0'.l:viweek
-          elseif g:calendar_weeknm == 4
-            let l:vdisplay2 = l:vdisplay2.'KW '.l:viweek
-          elseif g:calendar_weeknm == 5
-            let l:vdisplay2 = l:vdisplay2.' '.l:viweek
-          endif
-        else
-          if g:calendar_weeknm <= 2
-            let l:vdisplay2 = l:vdisplay2.'WK'.l:viweek
-          elseif g:calendar_weeknm == 3 || g:calendar_weeknm == 4
-            let l:vdisplay2 = l:vdisplay2.'KW'.l:viweek
-          elseif g:calendar_weeknm == 5
-            let l:vdisplay2 = l:vdisplay2.l:viweek
-          endif
-        endif
+        let l:vdisplay2 = l:vdisplay2 . s:format_weeknm(g:calendar_weeknm, l:viweek)
       endif
     endif
 
@@ -945,6 +800,17 @@ function! calendar#show(...) abort
   "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   "+++ build highlight
   "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  call s:build_highlight(l:dir, l:vwruler,
+        \ get(l:, 'fridaycol', 0), get(l:, 'saturdaycol', 0),
+        \ get(l:, 'borderhrz', ''), get(l:, 'whiteleft', ''))
+
+  return ''
+endfunction
+
+"*****************************************************************
+"* build_highlight : set up syntax highlighting for calendar
+"*****************************************************************
+function! s:build_highlight(dir, vwruler, fridaycol, saturdaycol, borderhrz, whiteleft) abort
   syn clear
   if g:calendar_mark =~ 'left-fit'
     syn match CalToday display "\s*\*\d*"
@@ -959,35 +825,35 @@ function! calendar#show(...) abort
   syn match CalHeader display "[^ ]*\d\+\/\d\+([^)]*)"
 
   if exists('g:calendar_navi')
+    let l:navi_parts = split(g:calendar_navi_label, ',')
     exec "silent! syn match CalNavi display \"\\(<"
-        \.get(split(g:calendar_navi_label, ','), 0, '')."\\|"
-        \.get(split(g:calendar_navi_label, ','), 2, '').">\\)\""
+        \.get(l:navi_parts, 0, '')."\\|"
+        \.get(l:navi_parts, 2, '').">\\)\""
     exec "silent! syn match CalNavi display \"\\s"
-        \.get(split(g:calendar_navi_label, ','), 1, '')."\\s\"hs=s+1,he=e-1"
+        \.get(l:navi_parts, 1, '')."\\s\"hs=s+1,he=e-1"
   endif
 
   " saturday, sunday
-
   if exists('g:calendar_monday')
-    if l:dir == 1
+    if a:dir == 1
       syn match CalSaturday display /|.\{15}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /|.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
-    elseif (l:dir == 0|| l:dir == 3)
+    elseif a:dir == 0 || a:dir == 3
       syn match CalSaturday display /^.\{15}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /^.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
     else
-      exec printf('syn match CalSaturday display /^.\{%d}\s\?\([0-9\ ]\d\)/hs=e-1 contains=ALL', l:fridaycol)
-      exec printf('syn match CalSunday display /^.\{%d}\s\?\([0-9\ ]\d\)/hs=e-1 contains=ALL', l:saturdaycol)
+      exec printf('syn match CalSaturday display /^.\{%d}\s\?\([0-9\ ]\d\)/hs=e-1 contains=ALL', a:fridaycol)
+      exec printf('syn match CalSunday display /^.\{%d}\s\?\([0-9\ ]\d\)/hs=e-1 contains=ALL', a:saturdaycol)
     endif
   else
-    if l:dir == 1
+    if a:dir == 1
       syn match CalSaturday display /|.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /|\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
-    elseif (l:dir == 0 || l:dir == 3)
+    elseif a:dir == 0 || a:dir == 3
       syn match CalSaturday display /^.\{18}\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
       syn match CalSunday display /^\s\([0-9\ ]\d\)/hs=e-1 contains=ALL
     else
-      exec printf('syn match CalSaturday display /^.\{%d}\s\?\([0-9\ ]\d\)/hs=e-1 contains=ALL', l:saturdaycol)
+      exec printf('syn match CalSaturday display /^.\{%d}\s\?\([0-9\ ]\d\)/hs=e-1 contains=ALL', a:saturdaycol)
       syn match CalSunday display /^\s*|\s*\([0-9\ ]\d\)/hs=e-1 contains=ALL
     endif
   endif
@@ -1000,18 +866,16 @@ function! calendar#show(...) abort
     syn match CalWeeknm display "KW[0-9\ ]\d"
   endif
 
-  execute 'syn match CalRuler "'.l:vwruler.'"'
+  execute 'syn match CalRuler "'.a:vwruler.'"'
 
   if search("\*","w") > 0
     silent execute "normal! gg/\*\<cr>"
   endif
 
-  if l:dir == 2
-    exec "syn match CalNormal display " string(l:borderhrz)
-    exec "syn match CalNormal display " string('^'.l:whiteleft.'+')
+  if a:dir == 2
+    exec "syn match CalNormal display " string(a:borderhrz)
+    exec "syn match CalNormal display " string('^'.a:whiteleft.'+')
   endif
-
-  return ''
 endfunction
 
 "*****************************************************************

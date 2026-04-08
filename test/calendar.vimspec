@@ -1,0 +1,48 @@
+Describe calendar#show()
+  It returns calendar string for current month
+    let output = calendar#show()
+    Assert !empty(output)
+    " Should contain day numbers
+    Assert output =~# '\<1\>'
+    Assert output =~# '\<28\>'
+  End
+
+  It returns string type
+    let output = calendar#show()
+    Assert Equals(type(output), type(''))
+  End
+
+  It contains weekday ruler
+    let output = calendar#show()
+    Assert output =~# 'Su Mo Tu We Th Fr Sa'
+  End
+
+  It contains year/month header
+    let output = calendar#show()
+    " Header format: YYYY/M(MonthName)
+    Assert output =~# '\d\{4}/\d\{1,2}('
+  End
+
+  It has multiple lines
+    let output = calendar#show()
+    let lines = split(output, "\n")
+    Assert len(lines) >= 3
+  End
+
+  It contains three months of calendar
+    let output = calendar#show()
+    " Default shows 3 months (prev, current, next)
+    let headers = []
+    for line in split(output, "\n")
+      if line =~# '\d\{4}/\d\{1,2}('
+        call add(headers, line)
+      endif
+    endfor
+    Assert len(headers) >= 2
+  End
+
+  It marks today with asterisk
+    let output = calendar#show()
+    Assert output =~# '\*'
+  End
+End
