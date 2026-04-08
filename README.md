@@ -11,20 +11,13 @@ calendar functionality (see `:help calendar-hooks` for more information).
 Installation
 ------------
 
-You can install `calendar.vim` in the usual way, by copying the contents of the
-`plugin`, `autoload` and `doc` directories into the equivalent directories
-inside `.vim`.
+Using [vim-plug](https://github.com/junegunn/vim-plug), add the following to your `.vimrc`:
 
-Alternatively, if you manage your plugins using [pathogen.vim][1], you can
-simply clone into the `bundle` directory:
+```vim
+Plug 'mattn/calendar-vim'
+```
 
-    cd ~/.vim/bundle
-    git clone git://github.com/mattn/calendar-vim
-
-Or, using submodules:
-
-    cd ~/.vim
-    git submodule add git://github.com/mattn/calendar-vim bundle/calendar-vim
+Then run `:PlugInstall`.
 
 Usage
 -----
@@ -53,8 +46,6 @@ Fast mappings are provided:
 
 For full documentation, install the plugin and run `:help calendar` from within
 Vim.
-
-[1]: https://github.com/tpope/vim-pathogen
 
 License
 -------
