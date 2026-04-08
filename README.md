@@ -1,6 +1,8 @@
 calendar.vim
 ============
 
+[![Test](https://github.com/mattn/calendar-vim/actions/workflows/test.yml/badge.svg)](https://github.com/mattn/calendar-vim/actions/workflows/test.yml)
+
 `calendar.vim` creates a calendar window you can use within vim.  It is useful
 in its own right as a calendar-inside-vim.  It also provides hooks to customise
 its behaviour, making it a good basis for writing new plugins which require
